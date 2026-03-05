@@ -1,4 +1,5 @@
-<div class="login-wrapper">
+<!-- Login solo si no está logueado -->
+<div *ngIf="!isLoggedIn" class="login-wrapper">
   <div class="login-card">
     <h2>Login</h2>
     <form (ngSubmit)="login()">
@@ -9,3 +10,6 @@
     <p *ngIf="message">{{ message }}</p>
   </div>
 </div>
+
+<!-- Cuando está logueado, Angular carga solo el dashboard -->
+<router-outlet *ngIf="isLoggedIn"></router-outlet>

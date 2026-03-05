@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -11,18 +12,28 @@ export class AppComponent {
   password: string = '';
   message: string = '';
 
-  constructor(private http: HttpClient) {}
 
-  login() {
-  const body = {
-    email: this.email,
-    password: this.password
-  };
+  constructor(private http: HttpClient, private router: Router) {}
 
-  this.http.post('http://localhost:8080/api/auth/login', body, { responseType: 'text' })
-    .subscribe({
-      next: (res) => this.message = res,
-      error: () => this.message = 'Credenciales incorrectas'
-    });
+  isLoggedIn = false; // control de sesión
+
+login() {
+  const body = { email: this.email, password: this.password };
+
+  this.http.post<{ success: boolean, message: string }>(
+    'http://localhost:8080/api/auth/login', body
+  ).subscribe({
+    next: (res) => {
+      if (res.success) {
+        this.isLoggedIn = true;       // ya logueado
+        this.router.navigate(['/dashboard']); // redirige a dashboard
+      } else {
+        this.message = res.message;
+      }
+    },
+    error: (err) => {
+      this.message = 'Error de conexión con el servidor';
+    }
+  });
 }
 }
