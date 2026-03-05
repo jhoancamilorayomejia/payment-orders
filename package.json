@@ -1,0 +1,12 @@
+{
+  "name": "payment-orders",
+  "private": true,
+  "scripts": {
+    "start": "concurrently \"npm run frontend\" \"npm run backend\"",
+    "frontend": "cd frontend && ng serve",
+    "backend": "cd backend && mvn spring-boot:run"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

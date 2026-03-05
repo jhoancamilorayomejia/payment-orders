@@ -1,0 +1,11 @@
+<div class="login-wrapper">
+  <div class="login-card">
+    <h2>Login</h2>
+    <form (ngSubmit)="login()">
+      <input type="email" placeholder="Email" [(ngModel)]="email" name="email" required>
+      <input type="password" placeholder="Password" [(ngModel)]="password" name="password" required>
+      <button type="submit">Iniciar sesión</button>
+    </form>
+    <p *ngIf="message">{{ message }}</p>
+  </div>
+</div>
