@@ -1,0 +1,9 @@
+.operator-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+}

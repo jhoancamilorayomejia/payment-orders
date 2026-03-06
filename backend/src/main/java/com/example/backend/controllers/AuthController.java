@@ -3,7 +3,10 @@ package com.example.backend.controllers;
 import org.springframework.web.bind.annotation.*;
 import com.example.backend.repositories.UserRepository;
 import com.example.backend.models.User;
+import com.example.backend.security.JwtUtil;
+
 import org.springframework.http.ResponseEntity;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,9 +16,11 @@ import java.util.Map;
 public class AuthController {
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
-    public AuthController(UserRepository userRepository) {
+    public AuthController(UserRepository userRepository, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/login")
@@ -29,9 +34,14 @@ public class AuthController {
         Map<String, Object> resp = new HashMap<>();
 
         if (user != null) {
+
+            String token = jwtUtil.generateToken(user);
+
             resp.put("success", true);
-            resp.put("message", "Inicio de sesión correcto");
-            //resp.put("userId", user.getId()); // opcional, puedes usarlo después
+            resp.put("message", "Login exitoso");
+            resp.put("rol", user.getRol());
+            resp.put("token", token);
+
         } else {
             resp.put("success", false);
             resp.put("message", "Credenciales incorrectas");

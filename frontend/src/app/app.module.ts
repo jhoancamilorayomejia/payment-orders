@@ -1,8 +1,10 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { tokenInterceptor } from './interceptors/token.interceptor';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -16,10 +18,13 @@ import { routes } from './app.routes';
   imports: [
     BrowserModule,
     FormsModule,
-    HttpClientModule,
-    RouterModule.forRoot(routes)   // 👈 ESTA LÍNEA ES LA IMPORTANTE
+    RouterModule.forRoot(routes)
   ],
-  providers: [],
+  providers: [
+    provideHttpClient(
+      withInterceptors([tokenInterceptor])
+    )
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

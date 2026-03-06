@@ -1,4 +1,6 @@
+com/example/backend/controllers/TestController.class
+com/example/backend/security/JwtUtil.class
+com/example/backend/BackendApplication.class
 com/example/backend/models/User.class
 com/example/backend/controllers/AuthController.class
-com/example/backend/BackendApplication.class
 com/example/backend/repositories/UserRepository.class

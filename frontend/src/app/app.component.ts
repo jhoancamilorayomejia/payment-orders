@@ -1,39 +1,124 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+
   email: string = '';
   password: string = '';
   message: string = '';
-
+  isLoggedIn = false;
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  isLoggedIn = false; // control de sesión
+  ngOnInit() {
 
-login() {
-  const body = { email: this.email, password: this.password };
+    const token = localStorage.getItem("token");
 
-  this.http.post<{ success: boolean, message: string }>(
-    'http://localhost:8080/api/auth/login', body
-  ).subscribe({
-    next: (res) => {
-      if (res.success) {
-        this.isLoggedIn = true;       // ya logueado
-        this.router.navigate(['/dashboard']); // redirige a dashboard
-      } else {
-        this.message = res.message;
+    if (token) {
+
+      this.isLoggedIn = true;
+
+      const role = localStorage.getItem("role");
+
+      if (role === 'ADMIN') {
+        this.router.navigate(['/dashboard']);
       }
-    },
-    error: (err) => {
-      this.message = 'Error de conexión con el servidor';
+
+      if (role === 'OPERATOR') {
+        this.router.navigate(['/operator']);
+      }
+
     }
-  });
-}
+
+    // revisar expiración del token constantemente
+    setInterval(() => {
+      this.checkTokenExpiration();
+    }, 1000);
+
+  }
+
+  login() {
+
+    const body = { email: this.email, password: this.password };
+
+    this.http.post<{ success: boolean, message: string, rol: string, token: string }>(
+      'http://localhost:8080/api/auth/login', body
+    ).subscribe({
+
+      next: (res) => {
+
+        if (res.success) {
+
+          // guardar token
+          localStorage.setItem("token", res.token);
+          localStorage.setItem("role", res.rol);
+
+          this.isLoggedIn = true;
+
+          if (res.rol === 'ADMIN') {
+            this.router.navigate(['/dashboard']);
+          }
+
+          if (res.rol === 'OPERATOR') {
+            this.router.navigate(['/operator']);
+          }
+
+        } else {
+          this.message = res.message;
+        }
+
+      },
+
+      error: () => {
+        this.message = 'Error de conexión con el servidor';
+      }
+
+    });
+
+  }
+
+  // 🔐 verificar expiración del token
+  checkTokenExpiration() {
+
+    const token = localStorage.getItem("token");
+
+    if (!token) return;
+
+    try {
+
+      const decoded: any = jwtDecode(token);
+
+      const exp = decoded.exp * 1000; // convertir a milisegundos
+      const now = Date.now();
+
+      if (exp < now) {
+
+        alert("Sesión expirada. Debes iniciar sesión nuevamente.");
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+
+        this.isLoggedIn = false;
+
+        this.router.navigate(['/']);
+      }
+
+    } catch (error) {
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+
+      this.router.navigate(['/']);
+
+    }
+
+  }
+
 }

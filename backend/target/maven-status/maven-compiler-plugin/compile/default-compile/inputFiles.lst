@@ -1,7 +1,9 @@
 /home/jhoan/Documentos/VORTEXBIRD/payment-orders/backend/src/main/java/com/example/backend/services/UserService.java
 /home/jhoan/Documentos/VORTEXBIRD/payment-orders/backend/src/main/java/com/example/backend/controllers/AuthController.java
 /home/jhoan/Documentos/VORTEXBIRD/payment-orders/backend/src/main/java/com/example/backend/controllers/TestController.java
-/home/jhoan/Documentos/VORTEXBIRD/payment-orders/backend/src/main/java/com/example/backend/config/SecurityConfig.java
 /home/jhoan/Documentos/VORTEXBIRD/payment-orders/backend/src/main/java/com/example/backend/BackendApplication.java
 /home/jhoan/Documentos/VORTEXBIRD/payment-orders/backend/src/main/java/com/example/backend/models/User.java
+/home/jhoan/Documentos/VORTEXBIRD/payment-orders/backend/src/main/java/com/example/backend/security/SecurityConfig.java
+/home/jhoan/Documentos/VORTEXBIRD/payment-orders/backend/src/main/java/com/example/backend/security/JwtUtil.java
+/home/jhoan/Documentos/VORTEXBIRD/payment-orders/backend/src/main/java/com/example/backend/security/JwtFilter.java
 /home/jhoan/Documentos/VORTEXBIRD/payment-orders/backend/src/main/java/com/example/backend/repositories/UserRepository.java
