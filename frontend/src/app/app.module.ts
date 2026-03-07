@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { tokenInterceptor } from './interceptors/token.interceptor';
@@ -18,6 +19,7 @@ import { routes } from './app.routes';
   imports: [
     BrowserModule,
     FormsModule,
+    CommonModule,
     RouterModule.forRoot(routes)
   ],
   providers: [
