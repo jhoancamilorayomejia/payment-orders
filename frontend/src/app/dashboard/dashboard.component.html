@@ -1,12 +1,19 @@
 <div class="dashboard-wrapper">
 
+  <!-- Topbar -->
   <div class="topbar">
+
     <div class="logo">Sistema de Órdenes</div>
-    <h3>Usuario: {{ currentUserEmail }}</h3>
+
+    <div class="user-info">
+      <span class="user-label">Usuario:</span>
+      <span class="user-email">{{ currentUserEmail }}</span>
+    </div>
 
     <div class="user-actions">
       <button class="logout-btn" (click)="logout()">Salir</button>
     </div>
+
   </div>
 
   <div class="green-container">
@@ -15,6 +22,7 @@
 
       <h2>Lista de órdenes</h2>
 
+      <!-- mensaje de éxito -->
       <div *ngIf="showSuccess" class="success-message">
         {{ successMessage }}
       </div>
@@ -57,9 +65,13 @@
 
             <td>{{ order.createdBy }}</td>
 
-            <td>{{ order.createdDate | date:'yyyy-MM-dd HH:mm' }}</td>
+            <td>
+              {{ order.createdDate | date:'yyyy-MM-dd HH:mm' }}
+            </td>
 
-            <td>{{ order.approvedBy || 'Pendiente sin aprobar' }}</td>
+            <td>
+              {{ order.approvedBy || 'Pendiente sin aprobar' }}
+            </td>
 
             <td>
               {{ order.approvedDate ? (order.approvedDate | date:'yyyy-MM-dd HH:mm') : 'Sin fecha de aprobación' }}
@@ -69,19 +81,26 @@
 
               <ng-container *ngIf="order.invoiceUrl; else noFile">
 
-                <button (click)="openFile(order.invoiceUrl)">Ver</button>
+                <button (click)="openFile(order.invoiceUrl)">
+                  Ver
+                </button>
 
-                <button (click)="downloadFile(order.invoiceUrl)">Descargar</button>
+                <button (click)="downloadFile(order.invoiceUrl)">
+                  Descargar
+                </button>
 
               </ng-container>
 
-              <ng-template #noFile>No hay</ng-template>
+              <ng-template #noFile>
+                No hay
+              </ng-template>
 
             </td>
 
             <td>
 
-              <button class="update-btn" (click)="openUpdateModal(order)">
+              <button class="update-btn"
+                      (click)="openUpdateModal(order)">
                 Actualizar
               </button>
 
@@ -95,25 +114,29 @@
 
     </div>
 
-    <!-- visor -->
+    <!-- VISOR PDF -->
 
     <div *ngIf="isViewerOpen" class="viewer-modal">
 
       <div class="viewer-content">
 
-        <button class="close-btn" (click)="closeViewer()">✖ Cerrar</button>
+        <button class="close-btn"
+                (click)="closeViewer()">
+          ✖ Cerrar
+        </button>
 
-        <iframe *ngIf="pdfBlobUrl"
-                [src]="pdfBlobUrl"
-                width="100%"
-                height="600px">
+        <iframe
+          *ngIf="pdfBlobUrl"
+          [src]="pdfBlobUrl"
+          width="100%"
+          height="600px">
         </iframe>
 
       </div>
 
     </div>
 
-    <!-- modal actualizar -->
+    <!-- MODAL ACTUALIZAR ORDEN -->
 
     <div *ngIf="isUpdateModalOpen" class="modal-overlay">
 
@@ -145,9 +168,15 @@
 
           <div class="modal-buttons">
 
-            <button class="save-btn" (click)="saveStatus()">Guardar</button>
+            <button class="save-btn"
+                    (click)="saveStatus()">
+              Guardar
+            </button>
 
-            <button class="cancel-btn" (click)="closeUpdateModal()">Cancelar</button>
+            <button class="cancel-btn"
+                    (click)="closeUpdateModal()">
+              Cancelar
+            </button>
 
           </div>
 

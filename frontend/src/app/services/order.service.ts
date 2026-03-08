@@ -8,13 +8,13 @@ export interface Order {
   description: string;
   amount: number;
   status: string;
-  invoiceUrl: string;
+  invoiceUrl: string | null;
 
   createdBy: string;
-  approvedBy: string;
+  approvedBy: string | null;
 
   createdDate: string;
-  approvedDate: string;
+  approvedDate: string | null;
 }
 
 @Injectable({
@@ -26,36 +26,51 @@ export class OrderService {
 
   constructor(private http: HttpClient) {}
 
+  // Obtener órdenes
   getOrders(): Observable<Order[]> {
+
     const token = localStorage.getItem('token') || '';
 
     return this.http.get<Order[]>(
       this.apiUrl,
-      { headers: { Authorization: `Bearer ${token}` } }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
   }
 
+  // Crear orden
   createOrder(formData: FormData): Observable<Order> {
+
     const token = localStorage.getItem('token') || '';
 
     return this.http.post<Order>(
       this.apiUrl,
       formData,
-      { headers: { Authorization: `Bearer ${token}` } }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
   }
 
-  // NUEVO METODO
-  updateOrderStatus(id: number, status: string): Observable<any> {
+  // Actualizar estado
+  updateOrderStatus(id: number, status: string): Observable<Order> {
 
     const token = localStorage.getItem('token') || '';
 
-    return this.http.put(
+    return this.http.put<Order>(
       `${this.apiUrl}/${id}/status?status=${status}`,
       {},
-      { headers: { Authorization: `Bearer ${token}` } }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
-
   }
 
 }

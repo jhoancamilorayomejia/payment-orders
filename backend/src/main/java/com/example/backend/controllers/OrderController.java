@@ -131,37 +131,47 @@ public class OrderController {
     // ACTUALIZAR STATUS DE ORDEN
     // -----------------------------
     @PutMapping("/{id}/status")
-    public ResponseEntity<?> updateOrderStatus(
-            @PathVariable Long id,
-            @RequestParam String status,
-            @RequestHeader("Authorization") String authHeader
-    ) {
+public ResponseEntity<?> updateOrderStatus(
+        @PathVariable Long id,
+        @RequestParam String status,
+        @RequestHeader("Authorization") String authHeader
+) {
 
-        try {
+    try {
 
-            Order order = orderRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Orden no encontrada"));
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Orden no encontrada"));
 
-            // actualizar estado
-            order.setStatus(status);
+        // actualizar estado
+        order.setStatus(status);
 
-            // usuario que aprueba
-            String userEmail = extractEmailFromToken(authHeader);
+        // obtener usuario del token
+        String userEmail = extractEmailFromToken(authHeader);
+
+        // si se aprueba o rechaza -> guardar auditoría
+        if (status.equalsIgnoreCase("APROBADO") || status.equalsIgnoreCase("RECHAZADO")) {
+
             order.setApprovedBy(userEmail);
-
-            // fecha aprobación
             order.setApprovedDate(LocalDateTime.now());
 
-            Order updated = orderRepository.save(order);
+        } else {
 
-            return ResponseEntity.ok(updated);
+            // si vuelve a pendiente limpiar datos
+            order.setApprovedBy(null);
+            order.setApprovedDate(null);
 
-        } catch (Exception e) {
-
-            return ResponseEntity.status(500)
-                    .body("Error al actualizar la orden: " + e.getMessage());
         }
+
+        Order updated = orderRepository.save(order);
+
+        return ResponseEntity.ok(updated);
+
+    } catch (Exception e) {
+
+        return ResponseEntity.status(500)
+                .body("Error al actualizar la orden: " + e.getMessage());
     }
+}
 
     // -----------------------------
     // Método auxiliar para extraer email del JWT
