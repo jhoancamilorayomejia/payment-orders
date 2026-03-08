@@ -1,33 +1,70 @@
-<h2>Lista de órdenes</h2>
+<div class="dashboard-wrapper">
 
-<table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Título</th>
-      <th>Descripción</th>
-      <th>Monto</th>
-      <th>Estado</th>
-      <th>Factura</th>
-      <th>Creado por</th>
-      <th>Fecha</th>
-    </tr>
-  </thead>
+  <!-- Barra superior -->
+  <div class="topbar">
 
-  <tbody>
-    <tr *ngFor="let order of orders">
-      <td>{{order.id}}</td>
-      <td>{{order.title}}</td>
-      <td>{{order.description}}</td>
-      <td>{{order.amount}}</td>
-      <td>{{order.status}}</td>
+    <div class="logo">
+      Sistema de Órdenes
+    </div>
 
-      <td>
-        <a [href]="order.invoice_url" target="_blank">Ver PDF</a>
-      </td>
+    <div class="user-actions">
+      <button class="logout-btn" (click)="logout()">
+        Salir
+      </button>
+    </div>
 
-      <td>{{order.created_by}}</td>
-      <td>{{order.created_date}}</td>
-    </tr>
-  </tbody>
-</table>
+  </div>
+
+
+  <!-- Contenido -->
+  <div class="green-container">
+
+    <div class="table-container">
+
+      <h2>Lista de órdenes</h2>
+
+      <table class="styled-table">
+
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Monto</th>
+            <th>Estado</th>
+            <th>Factura</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let order of orders">
+
+            <td>{{ order.id }}</td>
+            <td>{{ order.title }}</td>
+
+            <td class="desc">
+              {{ order.description }}
+            </td>
+
+            <td>
+              ${{ order.amount }}
+            </td>
+
+            <td>
+              <span class="status" [ngClass]="order.status.toLowerCase()">
+                {{ order.status }}
+              </span>
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>

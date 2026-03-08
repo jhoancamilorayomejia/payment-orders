@@ -20,13 +20,20 @@ export class OrderService {
 
   constructor(private http: HttpClient) {}
 
+  // Obtener todas las órdenes
   getOrders(): Observable<Order[]> {
     const token = localStorage.getItem('token') || '';
-    return this.http.get<Order[]>(this.apiUrl, { headers: { Authorization: `Bearer ${token}` } });
+    return this.http.get<Order[]>(this.apiUrl, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
   }
 
+  // Crear orden con archivo
   createOrder(formData: FormData): Observable<Order> {
     const token = localStorage.getItem('token') || '';
-    return this.http.post<Order>(this.apiUrl, formData, { headers: { Authorization: `Bearer ${token}` } });
+    // IMPORTANTE: No ponemos Content-Type, Angular lo gestiona
+    return this.http.post<Order>(this.apiUrl, formData, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
   }
 }

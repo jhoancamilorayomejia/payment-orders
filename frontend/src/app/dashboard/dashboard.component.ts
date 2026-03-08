@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { OrderService, Order } from '../services/order.service';
 
 @Component({
@@ -10,7 +11,10 @@ export class DashboardComponent implements OnInit {
 
   orders: Order[] = [];
 
-  constructor(private orderService: OrderService) {}
+  constructor(
+    private orderService: OrderService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
 
@@ -23,6 +27,14 @@ export class DashboardComponent implements OnInit {
         console.error(err);
       }
     });
+
+  }
+
+  logout() {
+
+    localStorage.removeItem('token'); // eliminar token
+
+    this.router.navigate(['/']); // volver al login
 
   }
 

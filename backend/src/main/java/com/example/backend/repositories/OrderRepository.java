@@ -1,7 +1,8 @@
 package com.example.backend.repositories;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.backend.models.Order;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface OrderRepository extends JpaRepository<Order, Long> {
-}
+@Repository
+public interface OrderRepository extends JpaRepository<Order, Long> {}
