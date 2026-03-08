@@ -2,6 +2,7 @@ package com.example.backend.controllers;
 
 import com.example.backend.models.Order;
 import com.example.backend.repositories.OrderRepository;
+import com.example.backend.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,9 +19,11 @@ import java.util.UUID;
 public class OrderController {
 
     private final OrderRepository orderRepository;
+    private final JwtUtil jwtUtil; // <-- inyectamos JwtUtil
 
-    public OrderController(OrderRepository orderRepository) {
+    public OrderController(OrderRepository orderRepository, JwtUtil jwtUtil) {
         this.orderRepository = orderRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     // -----------------------------
@@ -40,7 +43,8 @@ public class OrderController {
             @RequestParam String description,
             @RequestParam String amount,
             @RequestParam String status,
-            @RequestParam(name = "invoice_url", required = false) MultipartFile file
+            @RequestParam(name = "invoice_url", required = false) MultipartFile file,
+            @RequestHeader("Authorization") String authHeader // <-- capturamos el token JWT
     ) {
         try {
             Order order = new Order();
@@ -49,9 +53,17 @@ public class OrderController {
             order.setAmount(new BigDecimal(amount));
             order.setStatus(status);
 
-            if (file != null && !file.isEmpty()) {
+            // -----------------------------
+            // Asignar createdBy desde JWT
+            // -----------------------------
+            String userEmail = extractEmailFromToken(authHeader);
+            order.setCreatedBy(userEmail);
+            order.setApprovedBy(null); // todavía no aprobado
 
-                // Validar tipo
+            // -----------------------------
+            // Manejo del archivo
+            // -----------------------------
+            if (file != null && !file.isEmpty()) {
                 String contentType = file.getContentType();
                 if (contentType == null ||
                         !(contentType.equals("application/pdf") ||
@@ -60,23 +72,19 @@ public class OrderController {
                     return ResponseEntity.badRequest()
                             .body("Tipo de archivo no permitido. Solo PDF, PNG o JPG.");
                 }
-
-                // Validar tamaño
                 if (file.getSize() > 5 * 1024 * 1024) {
                     return ResponseEntity.badRequest()
                             .body("Archivo demasiado grande. Máximo 5MB.");
                 }
 
-                // Carpeta uploads dentro de backend
-                File projectRoot = new File(System.getProperty("user.dir")); // /payment-orders/backend
-                File folder = new File(projectRoot, "uploads"); // /payment-orders/backend/uploads
+                File projectRoot = new File(System.getProperty("user.dir")); 
+                File folder = new File(projectRoot, "uploads"); 
                 if (!folder.exists()) folder.mkdirs();
 
                 String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
                 File destinationFile = new File(folder, fileName);
                 file.transferTo(destinationFile);
 
-                // Guardar URL relativa para frontend
                 order.setInvoiceUrl("/uploads/" + fileName);
             }
 
@@ -90,5 +98,16 @@ public class OrderController {
             return ResponseEntity.status(500)
                     .body("Error al crear la orden: " + e.getMessage());
         }
+    }
+
+    // -----------------------------
+    // Método auxiliar para extraer email del JWT
+    // -----------------------------
+    private String extractEmailFromToken(String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            return jwtUtil.extractEmail(token);
+        }
+        return "desconocido";
     }
 }

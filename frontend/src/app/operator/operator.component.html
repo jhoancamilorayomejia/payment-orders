@@ -1,35 +1,48 @@
 <div class="operator-wrapper">
-  <div class="card">
-    <h2>Crear Nueva Orden</h2>
-    <p class="subtitle">Ingresa la información de la orden de pago</p>
 
-    <form (ngSubmit)="createOrder()" #orderForm="ngForm">
+  <!-- Barra superior -->
+  <div class="topbar">
+    <div class="logo">Sistema de Órdenes</div>
+    <div class="user-info">
+      <span>Usuario: {{ currentUserEmail }}</span>
+      <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
+    </div>
+  </div>
 
-      <div class="form-group">
-        <label>Título</label>
-        <input type="text" [(ngModel)]="order.title" name="title" required placeholder="Ej: Pago proveedor"/>
-      </div>
+  <!-- Contenido del panel -->
+  <div class="panel-content">
+    <div class="card">
+      <h2>Crear Nueva Orden</h2>
+      <p class="subtitle">Ingresa la información de la orden de pago</p>
 
-      <div class="form-group">
-        <label>Descripción</label>
-        <textarea rows="4" [(ngModel)]="order.description" name="description" required placeholder="Descripción..."></textarea>
-      </div>
+      <form (ngSubmit)="createOrder()" #orderForm="ngForm">
 
-      <div class="form-group">
-        <label>Monto</label>
-        <input type="number" [(ngModel)]="order.amount" name="amount" required placeholder="Ej: 1500"/>
-      </div>
+        <div class="form-group">
+          <label>Título</label>
+          <input type="text" [(ngModel)]="order.title" name="title" required placeholder="Ej: Pago proveedor"/>
+        </div>
 
-      <div class="form-group">
-  <label>Factura (PDF, PNG o JPG)</label>
-  <input
-    type="file"
-    (change)="onFileSelected($event)"
-    accept=".pdf, .png, .jpg, .jpeg"
-  />
-</div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea rows="4" [(ngModel)]="order.description" name="description" required placeholder="Descripción..."></textarea>
+        </div>
 
-      <button type="submit" [disabled]="orderForm.invalid">Crear Orden</button>
-    </form>
+        <div class="form-group">
+          <label>Monto</label>
+          <input type="number" [(ngModel)]="order.amount" name="amount" required placeholder="Ej: 1500"/>
+        </div>
+
+        <div class="form-group">
+          <label>Factura (PDF, PNG o JPG)</label>
+          <input
+            type="file"
+            (change)="onFileSelected($event)"
+            accept=".pdf, .png, .jpg, .jpeg"
+          />
+        </div>
+
+        <button type="submit" [disabled]="orderForm.invalid">Crear Orden</button>
+      </form>
+    </div>
   </div>
 </div>

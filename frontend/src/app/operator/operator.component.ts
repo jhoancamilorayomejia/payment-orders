@@ -12,18 +12,28 @@ import { OrderService } from '../services/order.service';
 })
 export class OperatorComponent {
 
-  order = { title: '', description: '', amount: 0, status: 'Pendiente' };
+  order = { title: '', description: '', amount: 0, status: 'Pendiente', created_by: '' };
   selectedFile: File | null = null;
+  currentUserEmail: string = '';
 
-  constructor(private orderService: OrderService, private router: Router) {}
+  constructor(private orderService: OrderService, private router: Router) {
+    // Leer token desde localStorage y extraer email
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        this.currentUserEmail = payload.sub;      // email del usuario
+        this.order.created_by = this.currentUserEmail; // asignar a la orden
+      } catch (e) {
+        console.error('No se pudo leer el token', e);
+      }
+    }
+  }
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (!file) return;
 
-    // -----------------------------
-    // Validar tipo de archivo
-    // -----------------------------
     const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
     if (!allowedTypes.includes(file.type)) {
       alert('Tipo de archivo no permitido. Solo PDF, PNG o JPG.');
@@ -31,9 +41,6 @@ export class OperatorComponent {
       return;
     }
 
-    // -----------------------------
-    // Validar tamaño máximo (5MB)
-    // -----------------------------
     if (file.size > 5 * 1024 * 1024) {
       alert('Archivo demasiado grande. Máximo 5MB.');
       this.selectedFile = null;
@@ -49,6 +56,7 @@ export class OperatorComponent {
     formData.append('description', this.order.description);
     formData.append('amount', this.order.amount.toString());
     formData.append('status', this.order.status);
+    formData.append('created_by', this.order.created_by); // ← enviar al backend
 
     if (this.selectedFile) {
       formData.append('invoice_url', this.selectedFile);
@@ -57,12 +65,12 @@ export class OperatorComponent {
     this.orderService.createOrder(formData).subscribe({
       next: () => {
         alert("Orden creada correctamente");
-        this.order = { title: '', description: '', amount: 0, status: 'Pendiente' };
+        this.order = { title: '', description: '', amount: 0, status: 'Pendiente', created_by: this.currentUserEmail };
         this.selectedFile = null;
       },
       error: (err) => {
         console.error(err);
-        alert(err.error); // mensaje del backend
+        alert(err.error);
       }
     });
   }
