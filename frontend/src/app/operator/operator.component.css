@@ -7,7 +7,7 @@
 
 /* barra superior */
 .topbar {
-  width: 100%;
+  width: 95%;
   height: 60px;
   background: #020617;
   display: flex;
@@ -35,6 +35,7 @@
   font-size: 14px;
 }
 
+/* botón logout */
 .logout-btn {
   background: #ef4444;
   color: white;
@@ -51,10 +52,11 @@
 }
 
 /* contenedor panel */
-.panel-content {
+.operator-wrapper {
   display: flex;
   justify-content: center;
-  padding: 100px 20px 60px; /* padding-top mayor por la barra fija */
+  align-items: flex-start;
+  padding: 100px 20px 60px; /* espacio por la barra fija */
 }
 
 /* tarjeta */
@@ -72,6 +74,12 @@ h2 {
   text-align: center;
   margin-bottom: 5px;
   color: #e2e8f0;
+}
+
+h3{
+  color:#ffffff;
+  margin-bottom:15px;
+  font-weight:20;
 }
 
 .subtitle {
@@ -109,7 +117,7 @@ textarea:focus {
   border-color: #22c55e;
 }
 
-/* boton */
+/* botón principal */
 button {
   width: 100%;
   padding: 12px;

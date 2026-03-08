@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { OrderService, Order } from '../services/order.service';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,40 +11,82 @@ import { OrderService, Order } from '../services/order.service';
 export class DashboardComponent implements OnInit {
 
   orders: Order[] = [];
-  backendUrl = 'http://localhost:8080'; // URL base del backend
 
-  pdfBlobUrl: string | null = null; // URL temporal del archivo
-  isViewerOpen: boolean = false;    // controla si se muestra el modal
+  backendUrl = 'http://localhost:8080';
+
+  pdfBlobUrl: SafeResourceUrl | null = null;
+
+  isViewerOpen: boolean = false;
+
+  currentUserEmail: string = '';
+
+  isUpdateModalOpen: boolean = false;
+
+  selectedOrder: Order | null = null;
+
+  newStatus: string = '';
+
+  successMessage: string = '';
+  showSuccess: boolean = false;
 
   constructor(
     private orderService: OrderService,
-    private router: Router
+    private router: Router,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
+
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        this.currentUserEmail = payload.sub;
+      } catch (e) {
+        console.error('No se pudo leer el token', e);
+      }
+    }
+
+    this.loadOrders();
+  }
+
+  loadOrders() {
+
     this.orderService.getOrders().subscribe({
-      next: (data) => {
+
+      next: (data: Order[]) => {
         this.orders = data;
       },
-      error: (err) => {
+
+      error: (err: any) => {
         console.error(err);
       }
+
     });
+
   }
 
   logout() {
+
     localStorage.removeItem('token');
+
     this.router.navigate(['/']);
+
   }
 
   getFileName(url: string): string {
+
     return url.split('/').pop() || 'archivo';
+
   }
 
-  // Abrir archivo dentro de la app (modal)
   openFile(url: string) {
+
     const fileName = this.getFileName(url);
+
     const fullUrl = `${this.backendUrl}/api/files/${fileName}`;
+
     const token = localStorage.getItem('token') || '';
 
     fetch(fullUrl, {
@@ -52,20 +95,32 @@ export class DashboardComponent implements OnInit {
       }
     })
       .then(res => {
-        if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
+
+        if (!res.ok) throw new Error(`Error ${res.status}`);
+
         return res.blob();
+
       })
       .then(blob => {
-        this.pdfBlobUrl = URL.createObjectURL(blob); // URL temporal
-        this.isViewerOpen = true;                    // abrir modal
+
+        const blobUrl = URL.createObjectURL(blob);
+
+        this.pdfBlobUrl =
+          this.sanitizer.bypassSecurityTrustResourceUrl(blobUrl);
+
+        this.isViewerOpen = true;
+
       })
       .catch(err => alert(`No se pudo abrir el archivo: ${err.message}`));
+
   }
 
-  // Descargar archivo
   downloadFile(url: string) {
+
     const fileName = this.getFileName(url);
+
     const fullUrl = `${this.backendUrl}/api/files/${fileName}`;
+
     const token = localStorage.getItem('token') || '';
 
     fetch(fullUrl, {
@@ -74,25 +129,88 @@ export class DashboardComponent implements OnInit {
       }
     })
       .then(res => {
-        if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
+
+        if (!res.ok) throw new Error(`Error ${res.status}`);
+
         return res.blob();
+
       })
       .then(blob => {
+
         const link = document.createElement('a');
+
         link.href = window.URL.createObjectURL(blob);
+
         link.download = fileName;
+
         link.click();
+
         window.URL.revokeObjectURL(link.href);
+
       })
       .catch(err => alert(`No se pudo descargar el archivo: ${err.message}`));
+
   }
 
-  // Cerrar visor
   closeViewer() {
+
     this.isViewerOpen = false;
-    if (this.pdfBlobUrl) {
-      URL.revokeObjectURL(this.pdfBlobUrl);
-      this.pdfBlobUrl = null;
-    }
+
+    this.pdfBlobUrl = null;
+
   }
+
+  openUpdateModal(order: Order) {
+
+    this.selectedOrder = order;
+
+    this.newStatus = order.status;
+
+    this.isUpdateModalOpen = true;
+
+  }
+
+  closeUpdateModal() {
+
+    this.isUpdateModalOpen = false;
+
+    this.selectedOrder = null;
+
+  }
+
+  saveStatus() {
+
+    if (!this.selectedOrder) return;
+
+    this.orderService
+      .updateOrderStatus(this.selectedOrder.id, this.newStatus)
+      .subscribe({
+
+        next: () => {
+
+          this.closeUpdateModal();
+
+          this.successMessage = "✅ El estado de la orden se actualizó correctamente.";
+          this.showSuccess = true;
+
+          setTimeout(() => {
+            this.showSuccess = false;
+          }, 3000);
+
+          this.loadOrders();
+
+        },
+
+        error: (err: any) => {
+
+          console.error(err);
+
+          alert("No se pudo actualizar la orden");
+
+        }
+
+      });
+
+  }
+
 }

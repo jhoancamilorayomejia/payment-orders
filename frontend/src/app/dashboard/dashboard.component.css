@@ -59,7 +59,7 @@
 /* ===== Tarjeta de tabla ===== */
 
 .table-container{
-  max-width:1100px;
+  max-width:1200px;
   margin:auto;
   background:#020617;
   padding:30px;
@@ -75,6 +75,12 @@ h2{
   color:#1064d8;
   margin-bottom:25px;
   font-weight:600;
+}
+
+h3{
+  color:#ffffff;
+  margin-bottom:15px;
+  font-weight:20;
 }
 
 
@@ -99,7 +105,7 @@ h2{
 }
 
 .styled-table td{
-  padding:12px;
+  padding:10px;
   border-top:1px solid #fafbfc;
   color:#e2e8f0;
 }
@@ -160,4 +166,112 @@ h2{
   padding: 5px 10px;
   cursor: pointer;
   border-radius: 4px;
+}
+
+/* ===== MODAL ACTUALIZAR ORDEN ===== */
+
+.modal-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.7);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:2000;
+}
+
+.modal-box{
+  background:#020617;
+  padding:30px;
+  width:400px;
+  border-radius:10px;
+  border:1px solid #1e293b;
+  box-shadow:0 10px 25px rgba(0,0,0,0.6);
+}
+
+.modal-box h2{
+  color:#22c55e;
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.modal-content p{
+  color:#e2e8f0;
+  margin-bottom:10px;
+}
+
+.modal-content label{
+  color:#e2e8f0;
+  display:block;
+  margin-top:15px;
+  margin-bottom:5px;
+}
+
+.modal-content select{
+  width:100%;
+  padding:8px;
+  border-radius:6px;
+  border:1px solid #334155;
+  background:#0f172a;
+  color:white;
+}
+
+.modal-buttons{
+  margin-top:20px;
+  display:flex;
+  justify-content:space-between;
+}
+
+.save-btn{
+  background:#22c55e;
+  border:none;
+  padding:8px 18px;
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.save-btn:hover{
+  background:#16a34a;
+}
+
+.cancel-btn{
+  background:#ef4444;
+  border:none;
+  padding:8px 18px;
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.cancel-btn:hover{
+  background:#b91c1c;
+}
+
+/* botón actualizar */
+
+.update-btn{
+  background:#3b82f6;
+  border:none;
+  padding:6px 14px;
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.update-btn:hover{
+  background:#1d4ed8;
+}
+
+.success-message{
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-weight: 600;
 }

@@ -2,6 +2,7 @@ package com.example.backend.models;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "orders")
@@ -15,14 +16,20 @@ public class Order {
     private String description;
     private BigDecimal amount;
     private String status;
-    private String invoiceUrl; // URL del PDF subido
+    private String invoiceUrl;
+    private String createdBy;
+    private String approvedBy;
 
-    private String createdBy;   // nuevo campo
-    private String approvedBy;  // nuevo campo (por defecto null)
+    @Column(name = "created_date", updatable = false)
+    private LocalDateTime createdDate;
+
+    @Column(name = "approved_date")
+    private LocalDateTime approvedDate;
 
     public Order() {}
 
-    public Order(String title, String description, BigDecimal amount, String status, String invoiceUrl, String createdBy, String approvedBy) {
+    public Order(String title, String description, BigDecimal amount, String status, String invoiceUrl,
+                 String createdBy, String approvedBy, LocalDateTime createdDate, LocalDateTime approvedDate) {
         this.title = title;
         this.description = description;
         this.amount = amount;
@@ -30,6 +37,8 @@ public class Order {
         this.invoiceUrl = invoiceUrl;
         this.createdBy = createdBy;
         this.approvedBy = approvedBy;
+        this.createdDate = createdDate;
+        this.approvedDate = approvedDate;
     }
 
     // Getters y setters
@@ -41,6 +50,8 @@ public class Order {
     public String getInvoiceUrl() { return invoiceUrl; }
     public String getCreatedBy() { return createdBy; }
     public String getApprovedBy() { return approvedBy; }
+    public LocalDateTime getCreatedDate() { return createdDate; }
+    public LocalDateTime getApprovedDate() { return approvedDate; }
 
     public void setTitle(String title) { this.title = title; }
     public void setDescription(String description) { this.description = description; }
@@ -49,4 +60,6 @@ public class Order {
     public void setInvoiceUrl(String invoiceUrl) { this.invoiceUrl = invoiceUrl; }
     public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
     public void setApprovedBy(String approvedBy) { this.approvedBy = approvedBy; }
+    public void setCreatedDate(LocalDateTime createdDate) { this.createdDate = createdDate; }
+    public void setApprovedDate(LocalDateTime approvedDate) { this.approvedDate = approvedDate; }
 }

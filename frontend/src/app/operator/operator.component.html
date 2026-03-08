@@ -1,16 +1,17 @@
-<div class="operator-wrapper">
+<div class="operator-layout">
 
   <!-- Barra superior -->
   <div class="topbar">
     <div class="logo">Sistema de Órdenes</div>
+    <h3>Usuario: {{ currentUserEmail }}</h3>
     <div class="user-info">
-      <span>Usuario: {{ currentUserEmail }}</span>
-      <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
+      
+      <button class="logout-btn" (click)="logout()">Salir</button>
     </div>
   </div>
 
   <!-- Contenido del panel -->
-  <div class="panel-content">
+  <div class="operator-wrapper">
     <div class="card">
       <h2>Crear Nueva Orden</h2>
       <p class="subtitle">Ingresa la información de la orden de pago</p>
@@ -42,6 +43,7 @@
         </div>
 
         <button type="submit" [disabled]="orderForm.invalid">Crear Orden</button>
+
       </form>
     </div>
   </div>
