@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,7 +33,7 @@ public class OrderController {
     }
 
     // -----------------------------
-    // Crear nueva orden con archivo
+    // Crear nueva orden con archivo (PDF, PNG, JPG)
     // -----------------------------
     @PostMapping
     public ResponseEntity<?> createOrder(
@@ -42,7 +41,7 @@ public class OrderController {
             @RequestParam String description,
             @RequestParam String amount,
             @RequestParam String status,
-            @RequestParam(name = "invoice_url", required = false) MultipartFile file // <- coincide con Angular
+            @RequestParam(name = "invoice_url", required = false) MultipartFile file
     ) {
         try {
             Order order = new Order();
@@ -52,34 +51,41 @@ public class OrderController {
             order.setStatus(status);
 
             if (file != null && !file.isEmpty()) {
+
                 // -----------------------------
-                // Validaciones del archivo
+                // Validar tipo de archivo
                 // -----------------------------
                 String contentType = file.getContentType();
                 if (contentType == null ||
-                        !(contentType.equals("application/pdf") || contentType.startsWith("image/"))) {
+                        !(contentType.equals("application/pdf") ||
+                          contentType.equals("image/png") ||
+                          contentType.equals("image/jpeg") ||
+                          contentType.equals("image/jpg"))) {
                     return ResponseEntity.badRequest()
-                            .body("Tipo de archivo no permitido. Solo PDF o imágenes.");
+                            .body("Tipo de archivo no permitido. Solo PDF, PNG o JPG.");
                 }
 
-                if (file.getSize() > 5 * 1024 * 1024) { // 5 MB
+                // -----------------------------
+                // Validar tamaño máximo (5MB)
+                // -----------------------------
+                if (file.getSize() > 5 * 1024 * 1024) {
                     return ResponseEntity.badRequest()
                             .body("Archivo demasiado grande. Máximo 5MB.");
                 }
 
                 // -----------------------------
-                // Guardar en carpeta uploads/
+                // Guardar archivo en carpeta uploads/
                 // -----------------------------
-               // Ruta absoluta al proyecto (ajusta según tu máquina)
-File projectRoot = new File(System.getProperty("user.dir")); // carpeta backend
-File folder = new File(projectRoot.getParentFile(), "uploads");
-if (!folder.exists()) folder.mkdirs();
+                File projectRoot = new File(System.getProperty("user.dir")); // backend
+                File folder = new File(projectRoot.getParentFile(), "uploads"); // /payment-orders/uploads
+                if (!folder.exists()) folder.mkdirs();
 
-String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-File destinationFile = new File(folder, fileName);
-file.transferTo(destinationFile);
+                String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                File destinationFile = new File(folder, fileName);
+                file.transferTo(destinationFile);
 
-order.setInvoiceUrl("/uploads/" + fileName);
+                // Guardar URL relativa en la DB
+                order.setInvoiceUrl("/uploads/" + fileName);
             }
 
             // -----------------------------

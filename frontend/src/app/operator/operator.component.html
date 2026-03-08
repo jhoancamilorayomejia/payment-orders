@@ -21,9 +21,13 @@
       </div>
 
       <div class="form-group">
-        <label>Factura (PDF)</label>
-        <input type="file" (change)="onFileSelected($event)" accept=".pdf"/>
-      </div>
+  <label>Factura (PDF, PNG o JPG)</label>
+  <input
+    type="file"
+    (change)="onFileSelected($event)"
+    accept=".pdf, .png, .jpg, .jpeg"
+  />
+</div>
 
       <button type="submit" [disabled]="orderForm.invalid">Crear Orden</button>
     </form>

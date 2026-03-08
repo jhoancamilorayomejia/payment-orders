@@ -18,30 +18,53 @@ export class OperatorComponent {
   constructor(private orderService: OrderService, private router: Router) {}
 
   onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
+    const file: File = event.target.files[0];
+    if (!file) return;
+
+    // -----------------------------
+    // Validar tipo de archivo
+    // -----------------------------
+    const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Tipo de archivo no permitido. Solo PDF, PNG o JPG.');
+      this.selectedFile = null;
+      return;
+    }
+
+    // -----------------------------
+    // Validar tamaño máximo (5MB)
+    // -----------------------------
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Archivo demasiado grande. Máximo 5MB.');
+      this.selectedFile = null;
+      return;
+    }
+
+    this.selectedFile = file;
   }
 
   createOrder() {
     const formData = new FormData();
-formData.append('title', this.order.title);
-formData.append('description', this.order.description);
-formData.append('amount', this.order.amount.toString());
-formData.append('status', this.order.status);
+    formData.append('title', this.order.title);
+    formData.append('description', this.order.description);
+    formData.append('amount', this.order.amount.toString());
+    formData.append('status', this.order.status);
 
-if (this.selectedFile) {
-  formData.append('invoice_url', this.selectedFile);
-}
+    if (this.selectedFile) {
+      formData.append('invoice_url', this.selectedFile);
+    }
 
     this.orderService.createOrder(formData).subscribe({
-  next: () => {
-    alert("Orden creada correctamente");
-  },
-  error: (err) => {
-    console.error(err);
-    // Mostrar mensaje del backend
-    alert(err.error);
-  }
-});
+      next: () => {
+        alert("Orden creada correctamente");
+        this.order = { title: '', description: '', amount: 0, status: 'Pendiente' };
+        this.selectedFile = null;
+      },
+      error: (err) => {
+        console.error(err);
+        alert(err.error); // mensaje del backend
+      }
+    });
   }
 
   logout() {
