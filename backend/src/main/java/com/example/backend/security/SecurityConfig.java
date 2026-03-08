@@ -20,10 +20,12 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/orders/**").authenticated()
-                .anyRequest().authenticated()
-            )
+    .requestMatchers("/api/auth/**").permitAll()
+    .requestMatchers("/uploads/**").permitAll()      // reemplaza antMatchers
+    .requestMatchers("/api/files/**").authenticated() // si quieres proteger descargas
+    .requestMatchers("/api/orders/**").authenticated()
+    .anyRequest().authenticated()
+)
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

@@ -121,3 +121,43 @@ h2{
   text-overflow:ellipsis;
   white-space:nowrap;
 }
+
+/* dashboard.component.css */
+
+/* Fondo semi-transparente */
+.viewer-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Caja del visor */
+.viewer-content {
+  background-color: white;
+  padding: 10px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 900px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Botón cerrar */
+.close-btn {
+  align-self: flex-end;
+  margin-bottom: 10px;
+  background-color: #ff5c5c;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
