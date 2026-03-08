@@ -17,8 +17,8 @@ public class Order {
     private BigDecimal amount;
     private String status;
     private String invoiceUrl;
-    private String createdBy;
-    private String approvedBy;
+    private String createdBy; // email del creador
+    private Long approvedBy;  // CAMBIO: ahora guarda userId
 
     @Column(name = "created_date", updatable = false)
     private LocalDateTime createdDate;
@@ -29,7 +29,7 @@ public class Order {
     public Order() {}
 
     public Order(String title, String description, BigDecimal amount, String status, String invoiceUrl,
-                 String createdBy, String approvedBy, LocalDateTime createdDate, LocalDateTime approvedDate) {
+                 String createdBy, Long approvedBy, LocalDateTime createdDate, LocalDateTime approvedDate) {
         this.title = title;
         this.description = description;
         this.amount = amount;
@@ -49,7 +49,7 @@ public class Order {
     public String getStatus() { return status; }
     public String getInvoiceUrl() { return invoiceUrl; }
     public String getCreatedBy() { return createdBy; }
-    public String getApprovedBy() { return approvedBy; }
+    public Long getApprovedBy() { return approvedBy; }
     public LocalDateTime getCreatedDate() { return createdDate; }
     public LocalDateTime getApprovedDate() { return approvedDate; }
 
@@ -59,7 +59,7 @@ public class Order {
     public void setStatus(String status) { this.status = status; }
     public void setInvoiceUrl(String invoiceUrl) { this.invoiceUrl = invoiceUrl; }
     public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
-    public void setApprovedBy(String approvedBy) { this.approvedBy = approvedBy; }
+    public void setApprovedBy(Long approvedBy) { this.approvedBy = approvedBy; }
     public void setCreatedDate(LocalDateTime createdDate) { this.createdDate = createdDate; }
     public void setApprovedDate(LocalDateTime approvedDate) { this.approvedDate = approvedDate; }
 }

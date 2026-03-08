@@ -19,6 +19,7 @@ export class DashboardComponent implements OnInit {
   isViewerOpen: boolean = false;
 
   currentUserEmail: string = '';
+  currentUserId: number | null = null;
 
   isUpdateModalOpen: boolean = false;
 
@@ -41,10 +42,16 @@ export class DashboardComponent implements OnInit {
 
     if (token) {
       try {
+
         const payload = JSON.parse(atob(token.split('.')[1]));
+
         this.currentUserEmail = payload.sub;
+        this.currentUserId = payload.userId;
+
       } catch (e) {
+
         console.error('No se pudo leer el token', e);
+
       }
     }
 
@@ -180,37 +187,49 @@ export class DashboardComponent implements OnInit {
 
   saveStatus() {
 
-    if (!this.selectedOrder) return;
+  if (!this.selectedOrder || this.currentUserId === null) return;
 
-    this.orderService
-      .updateOrderStatus(this.selectedOrder.id, this.newStatus)
-      .subscribe({
+  this.orderService
+    .updateOrderStatus(
+      this.selectedOrder.id,
+      this.newStatus,
+      this.currentUserId
+    )
+    .subscribe({
 
-        next: () => {
+      next: () => {
 
-          this.closeUpdateModal();
+        this.closeUpdateModal();
 
-          this.successMessage = "✅ El estado de la orden se actualizó correctamente.";
-          this.showSuccess = true;
+        this.successMessage = "✅ El estado de la orden se actualizó correctamente.";
+        this.showSuccess = true;
 
-          setTimeout(() => {
-            this.showSuccess = false;
-          }, 3000);
+        setTimeout(() => {
+          this.showSuccess = false;
+        }, 3000);
 
-          this.loadOrders();
+        this.loadOrders();
 
-        },
+      },
 
-        error: (err: any) => {
+      error: (err: any) => {
 
-          console.error(err);
+  console.error("Error completo:", err);
 
-          alert("No se pudo actualizar la orden");
-
-        }
-
-      });
-
+  if (err.error) {
+    console.error("Mensaje backend:", err.error);
   }
+
+  if (err.status) {
+    console.error("Código HTTP:", err.status);
+  }
+
+  alert(`Error al actualizar la orden: ${err.error?.message || err.message}`);
+
+}
+
+    });
+
+}
 
 }

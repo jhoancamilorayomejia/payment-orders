@@ -9,10 +9,8 @@ export interface Order {
   amount: number;
   status: string;
   invoiceUrl: string | null;
-
   createdBy: string;
-  approvedBy: string | null;
-
+  approvedBy: number | null; // CAMBIO: ahora es number
   createdDate: string;
   approvedDate: string | null;
 }
@@ -26,51 +24,26 @@ export class OrderService {
 
   constructor(private http: HttpClient) {}
 
-  // Obtener órdenes
   getOrders(): Observable<Order[]> {
-
     const token = localStorage.getItem('token') || '';
-
-    return this.http.get<Order[]>(
-      this.apiUrl,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+    return this.http.get<Order[]>(this.apiUrl, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
   }
 
-  // Crear orden
   createOrder(formData: FormData): Observable<Order> {
-
     const token = localStorage.getItem('token') || '';
-
-    return this.http.post<Order>(
-      this.apiUrl,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+    return this.http.post<Order>(this.apiUrl, formData, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
   }
 
-  // Actualizar estado
-  updateOrderStatus(id: number, status: string): Observable<Order> {
-
-    const token = localStorage.getItem('token') || '';
-
-    return this.http.put<Order>(
-      `${this.apiUrl}/${id}/status?status=${status}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+  updateOrderStatus(id: number, status: string, userId: number): Observable<Order> {
+    return this.http.put<Order>(`${this.apiUrl}/${id}/status`, null, {
+      params: {
+        status: status,
+        userId: userId.toString()
       }
-    );
+    });
   }
-
 }
