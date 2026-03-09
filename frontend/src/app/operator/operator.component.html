@@ -52,36 +52,35 @@
   </div>
 </div>
 
+
 <!-- Modal visual -->
 <div class="modal" [class.show]="isModalOpen">
   <div class="modal-content">
     <span class="close" (click)="closeModal()">&times;</span>
-    <h3>Detalles de la Orden</h3>
+    <h3>Detalles de las Órdenes</h3>
     <table class="details-table">
       <thead>
         <tr>
-          <th>ID</th>
           <th>Título</th>
           <th>Descripción</th>
           <th>Monto</th>
           <th>Estado</th>
+          <th>Creado por</th>
+          <th>Aprobado por</th>
+          <th>Fecha creación</th>
+          <th>Fecha aprobación</th>
         </tr>
       </thead>
       <tbody>
-        <!-- Datos de ejemplo por ahora -->
-        <tr>
-          <td>1</td>
-          <td>Pago proveedor</td>
-          <td>Pago por servicios de limpieza</td>
-          <td>1500</td>
-          <td>PENDIENTE</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Compra insumos</td>
-          <td>Compra de materiales de oficina</td>
-          <td>800</td>
-          <td>PENDIENTE</td>
+        <tr *ngFor="let ord of ordersList">
+          <td>{{ ord.title }}</td>
+          <td>{{ ord.description }}</td>
+          <td>{{ ord.amount }}</td>
+          <td>{{ ord.status }}</td>
+          <td>{{ ord.createdBy }}</td>
+          <td>{{ ord.approvedBy || '—' }}</td>
+          <td>{{ ord.createdDate | date:'short' }}</td>
+          <td>{{ ord.approvedDate ? (ord.approvedDate | date:'short') : '—' }}</td>
         </tr>
       </tbody>
     </table>

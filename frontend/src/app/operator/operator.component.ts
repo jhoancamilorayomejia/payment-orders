@@ -1,17 +1,23 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RouterModule, Router } from '@angular/router';
 import { OrderService } from '../services/order.service';
 
 @Component({
   selector: 'app-operator',
   standalone: true,
-  imports: [FormsModule],
+  imports: [
+    FormsModule,
+    CommonModule,
+    RouterModule
+  ],
   templateUrl: './operator.component.html',
   styleUrls: ['./operator.component.css']
 })
 export class OperatorComponent {
 
+  // -------- Formulario de nueva orden --------
   order = {
     title: '',
     description: '',
@@ -22,6 +28,12 @@ export class OperatorComponent {
 
   selectedFile: File | null = null;
   currentUserEmail: string = '';
+
+  // -------- Lista de órdenes para el modal --------
+  ordersList: any[] = [];
+
+  // -------- Modal visual --------
+  isModalOpen: boolean = false;
 
   constructor(private orderService: OrderService, private router: Router) {
 
@@ -38,8 +50,8 @@ export class OperatorComponent {
     }
   }
 
+  // -------- Manejo de archivos --------
   onFileSelected(event: any) {
-
     const file: File = event.target.files[0];
     if (!file) return;
 
@@ -65,6 +77,7 @@ export class OperatorComponent {
     this.selectedFile = file;
   }
 
+  // -------- Crear nueva orden --------
   createOrder() {
 
     const formData = new FormData();
@@ -82,14 +95,14 @@ export class OperatorComponent {
     this.orderService.createOrder(formData).subscribe({
 
       next: () => {
-
         alert("Orden creada correctamente");
 
+        // Reset formulario
         this.order = {
           title: '',
           description: '',
           amount: 0,
-          status: 'Pendiente',
+          status: 'PENDIENTE',
           created_by: this.currentUserEmail
         };
 
@@ -104,20 +117,31 @@ export class OperatorComponent {
     });
   }
 
+  // -------- Logout --------
   logout() {
     localStorage.removeItem('token');
     this.router.navigate(['/']);
   }
 
-  // -------- Modal visual --------
-  isModalOpen: boolean = false;
-
+  // -------- Modal --------
   openModal() {
+    this.loadOrders(); // carga órdenes dinámicamente
     this.isModalOpen = true;
   }
 
   closeModal() {
     this.isModalOpen = false;
   }
+
+  // -------- Cargar órdenes --------
+  loadOrders() {
+  this.orderService.getOrders().subscribe({
+    next: (data) => {
+      // Filtramos solo las órdenes creadas por el usuario actual
+      this.ordersList = data.filter(order => order.createdBy === this.currentUserEmail);
+    },
+    error: (err) => console.error('Error cargando órdenes:', err)
+  });
+}
 
 }
