@@ -5,9 +5,39 @@
     <form (ngSubmit)="login()">
       <input type="email" placeholder="Email" [(ngModel)]="email" name="email" required>
       <input type="password" placeholder="Password" [(ngModel)]="password" name="password" required>
-      <button type="submit">Iniciar sesión</button>
+
+      <!-- Botones alineados -->
+      <div class="button-group">
+        <button type="submit">Iniciar sesión</button>
+        <button type="button" (click)="openOrdersModal()">Ver órdenes</button>
+      </div>
     </form>
+
     <p *ngIf="message">{{ message }}</p>
+  </div>
+</div>
+
+<!-- Modal visual de órdenes -->
+<div class="modal" [class.show]="isOrdersModalOpen" (click)="closeOrdersModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <span class="close" (click)="closeOrdersModal()">&times;</span>
+    <h3>Órdenes</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Descripción</th>
+          <th>Monto</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="5" style="text-align:center;">No hay datos</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 

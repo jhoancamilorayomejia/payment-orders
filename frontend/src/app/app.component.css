@@ -1,43 +1,140 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-}
-
+/* Login card */
 .login-wrapper {
-  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #111; /* fondo negro */
-  color: #fff;
+  height: 100vh;
+  background: #113975;
 }
 
 .login-card {
-  background-color: #222;
-  padding: 2rem;
+  background-color: #fff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  width: 350px;
+  text-align: center;
+}
+
+.login-card h2 {
+  margin-bottom: 20px;
+  color: #1a237e;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  box-shadow: 0 0 10px #000;
-  width: 300px;
+  font-size: 14px;
+}
+
+.button-group {
   display: flex;
-  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
 }
 
-input {
-  margin: 0.5rem 0;
-  padding: 0.5rem;
+.button-group button {
+  padding: 10px 20px;
   border: none;
-  border-radius: 4px;
-}
-
-button {
-  padding: 0.5rem;
-  background-color: #555;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
+  color: #fff;
+  transition: 0.3s;
 }
 
-button:hover {
-  background-color: #777;
+.button-group button[type="submit"] {
+  background-color: #1a237e;
+}
+
+.button-group button[type="submit"]:hover {
+  background-color: #283593;
+}
+
+.button-group button[type="button"] {
+  background-color: #3949ab;
+}
+
+.button-group button[type="button"]:hover {
+  background-color: #5c6bc0;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+  transition: 0.3s;
+}
+
+.modal.show {
+  display: block;
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 8% auto;
+  padding: 25px 30px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 700px;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.close {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #1a237e;
+}
+
+.close:hover {
+  color: #283593;
+}
+
+.modal-content h3 {
+  margin-bottom: 20px;
+  color: #1a237e;
+}
+
+/* Tabla dentro del modal */
+.modal-content table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.modal-content th, .modal-content td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.modal-content th {
+  background-color: #1a237e;
+  color: #fff;
+  font-weight: 600;
+}
+
+.modal-content td {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.modal-content tbody tr:hover td {
+  background-color: #e8eaf6;
+  transition: 0.3s;
 }

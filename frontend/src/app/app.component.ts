@@ -15,6 +15,9 @@ export class AppComponent implements OnInit {
   message: string = '';
   isLoggedIn = false;
 
+  // 🔹 NUEVO: estado del modal de órdenes
+  isOrdersModalOpen = false;
+
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
@@ -119,6 +122,15 @@ export class AppComponent implements OnInit {
 
     }
 
+  }
+
+  // 🔹 NUEVOS MÉTODOS PARA EL MODAL
+  openOrdersModal() {
+    this.isOrdersModalOpen = true;
+  }
+
+  closeOrdersModal() {
+    this.isOrdersModalOpen = false;
   }
 
 }
