@@ -275,3 +275,8 @@ h3{
   margin-bottom: 15px;
   font-weight: 600;
 }
+
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

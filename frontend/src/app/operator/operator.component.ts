@@ -16,7 +16,7 @@ export class OperatorComponent {
     title: '',
     description: '',
     amount: 0,
-    status: 'Pendiente',
+    status: 'PENDIENTE',
     created_by: ''
   };
 
