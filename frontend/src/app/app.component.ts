@@ -18,6 +18,9 @@ export class AppComponent implements OnInit {
   // 🔹 NUEVO: estado del modal de órdenes
   isOrdersModalOpen = false;
 
+  // 🔹 NUEVO: arreglo para almacenar las órdenes del backend
+  orders: OrderData[] = [];
+
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
@@ -126,11 +129,32 @@ export class AppComponent implements OnInit {
 
   // 🔹 NUEVOS MÉTODOS PARA EL MODAL
   openOrdersModal() {
-    this.isOrdersModalOpen = true;
-  }
+  this.isOrdersModalOpen = true;
+
+  // Traer datos del backend al abrir el modal
+  this.http.get<OrderData[]>('http://localhost:8080/custom-response')
+    .subscribe({
+      next: (res) => {
+        // 🔹 Filtrar solo los aprobados
+        this.orders = res.filter(order => order.status === 'APROBADO');
+      },
+      error: (err) => {
+        console.error('Error al obtener órdenes:', err);
+        this.orders = [];
+      }
+    });
+}
 
   closeOrdersModal() {
     this.isOrdersModalOpen = false;
   }
 
+}
+
+// 🔹 NUEVA INTERFAZ para tipar los datos del endpoint
+interface OrderData {
+  id: number;
+  status: string;
+  approved_date: string | null;
+  approved_by: string | null;
 }

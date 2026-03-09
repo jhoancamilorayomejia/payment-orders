@@ -23,21 +23,26 @@
     <span class="close" (click)="closeOrdersModal()">&times;</span>
     <h3>Órdenes</h3>
     <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Título</th>
-          <th>Descripción</th>
-          <th>Monto</th>
-          <th>Estado</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td colspan="5" style="text-align:center;">No hay datos</td>
-        </tr>
-      </tbody>
-    </table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Estado</th>
+      <th>Fecha Aprobación</th>
+      <th>Aprobado Por</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngIf="orders.length === 0">
+      <td colspan="4" style="text-align:center;">No hay datos</td>
+    </tr>
+    <tr *ngFor="let order of orders">
+      <td>{{ order.id }}</td>
+      <td>{{ order.status }}</td>
+      <td>{{ order.approved_date || '-' }}</td>
+      <td>{{ order.approved_by || '-' }}</td>
+    </tr>
+  </tbody>
+</table>
   </div>
 </div>
 
