@@ -3,6 +3,14 @@ import { Router } from '@angular/router';
 import { OrderService, Order } from '../services/order.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
+interface OrderFilter {
+  status: string;
+  createdBy: string;
+  approvedBy: string;
+  createdDateFrom: string;
+  createdDateTo: string;
+}
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -24,6 +32,15 @@ export class DashboardComponent implements OnInit {
 
   successMessage: string = '';
   showSuccess: boolean = false;
+
+  // Objeto para filtros
+  filter: OrderFilter = {
+    status: '',
+    createdBy: '',
+    approvedBy: '',
+    createdDateFrom: '',
+    createdDateTo: ''
+  };
 
   constructor(
     private orderService: OrderService,
@@ -50,10 +67,37 @@ export class DashboardComponent implements OnInit {
       next: (data: Order[]) => {
         this.orders = data;
       },
-      error: (err: any) => {
-        console.error(err);
-      }
+      error: (err: any) => console.error(err)
     });
+  }
+
+  // -----------------------------
+  // FILTROS
+  // -----------------------------
+  applyFilters() {
+    this.orderService.getOrders().subscribe({
+      next: (data: Order[]) => {
+        this.orders = data.filter(o => {
+          const createdDate = new Date(o.createdDate);
+          const from = this.filter.createdDateFrom ? new Date(this.filter.createdDateFrom) : null;
+          const to = this.filter.createdDateTo ? new Date(this.filter.createdDateTo) : null;
+
+          const matchStatus = !this.filter.status || o.status === this.filter.status;
+          const matchCreatedBy = !this.filter.createdBy || o.createdBy.toString() === this.filter.createdBy;
+          const matchApprovedBy = !this.filter.approvedBy || (o.approvedBy && o.approvedBy.toString() === this.filter.approvedBy);
+          const matchFrom = !from || createdDate >= from;
+          const matchTo = !to || createdDate <= to;
+
+          return matchStatus && matchCreatedBy && matchApprovedBy && matchFrom && matchTo;
+        });
+      },
+      error: err => console.error(err)
+    });
+  }
+
+  resetFilters() {
+    this.filter = { status: '', createdBy: '', approvedBy: '', createdDateFrom: '', createdDateTo: '' };
+    this.loadOrders();
   }
 
   logout() {
@@ -70,13 +114,8 @@ export class DashboardComponent implements OnInit {
     const fullUrl = `${this.backendUrl}/api/files/${fileName}`;
     const token = localStorage.getItem('token') || '';
 
-    fetch(fullUrl, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-      .then(res => {
-        if (!res.ok) throw new Error(`Error ${res.status}`);
-        return res.blob();
-      })
+    fetch(fullUrl, { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(res => { if (!res.ok) throw new Error(`Error ${res.status}`); return res.blob(); })
       .then(blob => {
         const blobUrl = URL.createObjectURL(blob);
         this.pdfBlobUrl = this.sanitizer.bypassSecurityTrustResourceUrl(blobUrl);
@@ -90,13 +129,8 @@ export class DashboardComponent implements OnInit {
     const fullUrl = `${this.backendUrl}/api/files/${fileName}`;
     const token = localStorage.getItem('token') || '';
 
-    fetch(fullUrl, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-      .then(res => {
-        if (!res.ok) throw new Error(`Error ${res.status}`);
-        return res.blob();
-      })
+    fetch(fullUrl, { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(res => { if (!res.ok) throw new Error(`Error ${res.status}`); return res.blob(); })
       .then(blob => {
         const link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
@@ -113,7 +147,6 @@ export class DashboardComponent implements OnInit {
   }
 
   openUpdateModal(order: Order) {
-    // Solo permitir abrir modal si el estado es PENDIENTE
     if (order.status !== 'PENDIENTE') {
       alert('Solo se pueden actualizar órdenes pendientes.');
       return;
@@ -131,34 +164,23 @@ export class DashboardComponent implements OnInit {
   saveStatus() {
     if (!this.selectedOrder || this.currentUserId === null) return;
 
-    // Validación extra: solo guardar si está pendiente
     if (this.selectedOrder.status !== 'PENDIENTE') {
       alert('No se puede actualizar una orden que no está pendiente.');
       this.closeUpdateModal();
       return;
     }
 
-    this.orderService
-      .updateOrderStatus(
-        this.selectedOrder.id,
-        this.newStatus,
-        this.currentUserId
-      )
+    this.orderService.updateOrderStatus(this.selectedOrder.id, this.newStatus, this.currentUserId)
       .subscribe({
         next: () => {
           this.closeUpdateModal();
-
           this.successMessage = "✅ El estado de la orden se actualizó correctamente.";
           this.showSuccess = true;
-
-          setTimeout(() => { this.showSuccess = false; }, 3000);
-
+          setTimeout(() => this.showSuccess = false, 3000);
           this.loadOrders();
         },
         error: (err: any) => {
-          console.error("Error completo:", err);
-          if (err.error) console.error("Mensaje backend:", err.error);
-          if (err.status) console.error("Código HTTP:", err.status);
+          console.error(err);
           alert(`Error al actualizar la orden: ${err.error?.message || err.message}`);
         }
       });

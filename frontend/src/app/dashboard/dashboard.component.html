@@ -1,14 +1,11 @@
 <div class="dashboard-wrapper">
 
-  <!-- Topbar -->
   <div class="topbar">
     <div class="logo">Sistema de Órdenes</div>
-
     <div class="user-info">
-      <span class="user-label">Usuario:</span>
-      <h3>Usuario: {{ currentUserEmail }} (ID: {{ currentUserId }})</h3>
+      <span>Usuario:</span>
+      <h3>{{ currentUserEmail }} (ID: {{ currentUserId }})</h3>
     </div>
-
     <div class="user-actions">
       <button class="logout-btn" (click)="logout()">Salir</button>
     </div>
@@ -16,14 +13,50 @@
 
   <div class="green-container">
 
-    <div class="table-container">
+    <!-- FILTROS -->
+    <div class="filter-panel">
+      <h3>Filtrar órdenes</h3>
+      <div class="filters">
+        <label>
+          Estado:
+          <select [(ngModel)]="filter.status">
+            <option value="">Todos</option>
+            <option value="PENDIENTE">Pendiente</option>
+            <option value="APROBADO">Aprobado</option>
+            <option value="RECHAZADO">Rechazado</option>
+          </select>
+        </label>
 
+        <label>
+          Creado por (ID):
+          <input type="text" [(ngModel)]="filter.createdBy" placeholder="ID creador"/>
+        </label>
+
+        <label>
+          Aprobado por (ID):
+          <input type="text" [(ngModel)]="filter.approvedBy" placeholder="ID aprobador"/>
+        </label>
+
+        <label>
+          Desde:
+          <input type="date" [(ngModel)]="filter.createdDateFrom"/>
+        </label>
+
+        <label>
+          Hasta:
+          <input type="date" [(ngModel)]="filter.createdDateTo"/>
+        </label>
+
+        <button (click)="applyFilters()">Aplicar</button>
+        <button (click)="resetFilters()">Limpiar</button>
+      </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="table-container">
       <h2>Lista de órdenes</h2>
 
-      <!-- mensaje de éxito -->
-      <div *ngIf="showSuccess" class="success-message">
-        {{ successMessage }}
-      </div>
+      <div *ngIf="showSuccess" class="success-message">{{ successMessage }}</div>
 
       <table class="styled-table">
         <thead>
@@ -41,7 +74,6 @@
             <th>Acciones</th>
           </tr>
         </thead>
-
         <tbody>
           <tr *ngFor="let order of orders">
             <td>{{ order.id }}</td>
@@ -49,14 +81,12 @@
             <td class="desc">{{ order.description }}</td>
             <td>${{ order.amount }}</td>
             <td>
-              <span class="status" [ngClass]="order.status.toLowerCase()">
-                {{ order.status }}
-              </span>
+              <span class="status" [ngClass]="order.status.toLowerCase()">{{ order.status }}</span>
             </td>
             <td>{{ order.createdBy }}</td>
             <td>{{ order.createdDate | date:'yyyy-MM-dd HH:mm' }}</td>
             <td>{{ order.approvedBy || 'Pendiente sin aprobar' }}</td>
-            <td>{{ order.approvedDate ? (order.approvedDate | date:'yyyy-MM-dd HH:mm') : 'Sin fecha de aprobación' }}</td>
+            <td>{{ order.approvedDate ? (order.approvedDate | date:'yyyy-MM-dd HH:mm') : 'Sin fecha' }}</td>
             <td>
               <ng-container *ngIf="order.invoiceUrl; else noFile">
                 <button (click)="openFile(order.invoiceUrl)">Ver</button>
@@ -65,9 +95,8 @@
               <ng-template #noFile>No hay</ng-template>
             </td>
             <td>
-              <!-- Botón Actualizar solo habilitado si estado es PENDIENTE -->
-              <button class="update-btn"
-                      (click)="openUpdateModal(order)"
+              <button class="update-btn" 
+                      (click)="openUpdateModal(order)" 
                       [disabled]="order.status !== 'PENDIENTE'">
                 Actualizar
               </button>
@@ -75,40 +104,6 @@
           </tr>
         </tbody>
       </table>
-
-    </div>
-
-    <!-- VISOR PDF -->
-    <div *ngIf="isViewerOpen" class="viewer-modal">
-      <div class="viewer-content">
-        <button class="close-btn" (click)="closeViewer()">✖ Cerrar</button>
-        <iframe *ngIf="pdfBlobUrl" [src]="pdfBlobUrl" width="100%" height="600px"></iframe>
-      </div>
-    </div>
-
-    <!-- MODAL ACTUALIZAR ORDEN -->
-    <div *ngIf="isUpdateModalOpen && selectedOrder?.status === 'PENDIENTE'" class="modal-overlay">
-      <div class="modal-box">
-        <h2>Actualizar Orden</h2>
-        <div class="modal-content">
-          <p><strong>ID:</strong> {{ selectedOrder?.id }}</p>
-          <p><strong>Título:</strong> {{ selectedOrder?.title }}</p>
-          <p><strong>Descripción:</strong> {{ selectedOrder?.description }}</p>
-          <p><strong>Monto:</strong> ${{ selectedOrder?.amount }}</p>
-          <p><strong>Estado actual:</strong> {{ selectedOrder?.status }}</p>
-
-          <label>Nuevo estado</label>
-          <select [(ngModel)]="newStatus">
-            <option value="APROBADO">Aprobado</option>
-            <option value="RECHAZADO">Rechazado</option>
-          </select>
-
-          <div class="modal-buttons">
-            <button class="save-btn" (click)="saveStatus()">Guardar</button>
-            <button class="cancel-btn" (click)="closeUpdateModal()">Cancelar</button>
-          </div>
-        </div>
-      </div>
     </div>
 
   </div>
