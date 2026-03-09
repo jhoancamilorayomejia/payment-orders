@@ -33,7 +33,9 @@ export class DashboardComponent implements OnInit {
   successMessage: string = '';
   showSuccess: boolean = false;
 
-  // Objeto para filtros
+  // -----------------------------
+  // FILTROS
+  // -----------------------------
   filter: OrderFilter = {
     status: '',
     createdBy: '',
@@ -82,9 +84,9 @@ export class DashboardComponent implements OnInit {
           const from = this.filter.createdDateFrom ? new Date(this.filter.createdDateFrom) : null;
           const to = this.filter.createdDateTo ? new Date(this.filter.createdDateTo) : null;
 
-          const matchStatus = !this.filter.status || o.status === this.filter.status;
-          const matchCreatedBy = !this.filter.createdBy || o.createdBy.toString() === this.filter.createdBy;
-          const matchApprovedBy = !this.filter.approvedBy || (o.approvedBy && o.approvedBy.toString() === this.filter.approvedBy);
+          const matchStatus = !this.filter.status || o.status.toLowerCase().includes(this.filter.status.toLowerCase());
+          const matchCreatedBy = !this.filter.createdBy || o.createdBy.toString().toLowerCase().includes(this.filter.createdBy.toLowerCase());
+          const matchApprovedBy = !this.filter.approvedBy || (o.approvedBy && o.approvedBy.toString().toLowerCase().includes(this.filter.approvedBy.toLowerCase()));
           const matchFrom = !from || createdDate >= from;
           const matchTo = !to || createdDate <= to;
 
@@ -100,6 +102,9 @@ export class DashboardComponent implements OnInit {
     this.loadOrders();
   }
 
+  // -----------------------------
+  // FUNCIONES EXISTENTES
+  // -----------------------------
   logout() {
     localStorage.removeItem('token');
     this.router.navigate(['/']);

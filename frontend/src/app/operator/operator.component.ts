@@ -108,4 +108,16 @@ export class OperatorComponent {
     localStorage.removeItem('token');
     this.router.navigate(['/']);
   }
+
+  // -------- Modal visual --------
+  isModalOpen: boolean = false;
+
+  openModal() {
+    this.isModalOpen = true;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+  }
+
 }
