@@ -288,7 +288,6 @@ BEGIN
         SET status = 'ARCHIVADO'
         WHERE status = 'RECHAZADO'
           AND created_date <= NOW() - INTERVAL '1 minute';
-
         COMMIT;
     EXCEPTION
         WHEN OTHERS THEN
@@ -298,7 +297,9 @@ BEGIN
 END;
 $$;
 
+
 * Y posterior ejecutar:
+
 
 CALL archive_old_rejected_orders();
 
