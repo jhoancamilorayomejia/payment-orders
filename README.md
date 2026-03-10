@@ -95,36 +95,34 @@ https://localhost8080/custom-response
 
 La estructura del backend sigue una arquitectura por capas para separar responsabilidades.
 
-backend/src/main/java/com/example/backend/config/Web.Config: Se encarga de configurar recursos estáticos personalizados en la aplicación. Específicamente permite que los archivos almacenados en la carpeta "uploads" del backend puedan ser accedidos mediante una URL pública.
+**backend/src/main/java/com/example/backend/config/Web.Config:** Se encarga de configurar recursos estáticos personalizados en la aplicación. Específicamente permite que los archivos almacenados en la carpeta "uploads" del backend puedan ser accedidos mediante una URL pública.
 
-controllers/AuthController.java:
-se encarga de gestionar la autenticación de los usuarios dentro del sistema. Su principal función es validar las credenciales enviadas desde el frontend y generar un token JWT cuando el usuario se autentica correctamente.
+**controllers/AuthController.java:**
+Se encarga de gestionar la autenticación de los usuarios dentro del sistema. Su principal función es validar las credenciales enviadas desde el frontend y generar un token JWT cuando el usuario se autentica correctamente.
 
-controllers/OrderController.java: Se encargado de gestionar todas las operaciones relacionadas con las órdenes dentro del sistema. Permite crear órdenes,
+**controllers/OrderController.java:** Se encargado de gestionar todas las operaciones relacionadas con las órdenes dentro del sistema. Permite crear órdenes,
 consultar órdenes existentes, actualizar su estado y consultar el historial de cambios de estado asociados a cada orden.
 
-controllers/FileController.java: se encarga de gestionar el acceso y la descarga de archivos almacenados en el servidor, específicamente aquellos guardados en la
-carpeta "uploads" del backend.
+**controllers/FileController.java:** se encarga de gestionar el acceso y la descarga de archivos almacenados en el servidor, específicamente aquellos guardados en la carpeta "uploads" del backend.
 
-models/Order.java: Representa la entidad de "Orden" (tabla orders) dentro del sistema de gestión de pagos. Su función es modelar la información principal de una orden, incluyendo su título, descripción, monto, estado, comprobante (invoice), así como los datos relacionados con su creación y aprobación.
+**models/Order.java:** Representa la entidad de "Orden" (tabla orders) dentro del sistema de gestión de pagos. Su función es modelar la información principal de una orden, incluyendo su título, descripción, monto, estado, comprobante (invoice), así como los datos relacionados con su creación y aprobación.
 
-models/OrderStatusLog.java: Representa el historial de cambios de estado de una orden que viene de la tabla orders de mi posgresql. Su función es registrar cada vez que una orden cambia de estado, almacenando el estado anterior, el nuevo estado, la fecha del cambio y el usuario que realizó la modificación.
+**models/OrderStatusLog.java:** Representa el historial de cambios de estado de una orden que viene de la tabla orders de mi posgresql. Su función es registrar cada vez que una orden cambia de estado, almacenando el estado anterior, el nuevo estado, la fecha del cambio y el usuario que realizó la modificación.
 
-models/User.java: Representa la entidad de usuario ("user") dentro del sistema. Su función es almacenar la información básica necesaria para la autenticación y
-autorización de los usuarios, como el correo electrónico, la contraseña y el rol que determina sus permisos dentro de la aplicación.
+**models/User.java:** Representa la entidad de usuario ("user") dentro del sistema. Su función es almacenar la información básica necesaria para la autenticación y autorización de los usuarios, como el correo electrónico, la contraseña y el rol que determina sus permisos dentro de la aplicación.
 
-repositories/OrderRepository.java: Se encarga de gestionar las operaciones de acceso a datos relacionadas con la entidad Order. Permitiendo peticiones como guardar, actualizar y consultar órdenes almacenadas en la base de datos.
+**repositories/OrderRepository.java:** Se encarga de gestionar las operaciones de acceso a datos relacionadas con la entidad Order. Permitiendo peticiones como guardar, actualizar y consultar órdenes almacenadas en la base de datos.
 
-repositories/OrderStatusLogRepository.java: Se encarga de gestionar el acceso a los datos relacionados con el historial de cambios de estado de las órdenes. Permite consultar, guardar y administrar los registros almacenados en la tabla "order_status_log".
+**repositories/OrderStatusLogRepository.java:** Se encarga de gestionar el acceso a los datos relacionados con el historial de cambios de estado de las órdenes. Permite consultar, guardar y administrar los registros almacenados en la tabla "order_status_log".
 
-repositories/UserRepository.java: Se encarga de gestionar el acceso a los datos de los usuarios almacenados en la base de datos (user). Permite realizar operaciones de persistencia como consultar, guardar, actualizar registros de la entidad user.
+**repositories/UserRepository.java:** Se encarga de gestionar el acceso a los datos de los usuarios almacenados en la base de datos (user). Permite realizar operaciones de persistencia como consultar, guardar, actualizar registros de la entidad user.
 
-security/JwtFilter.java: Actúa como un filtro de seguridad encargado de interceptar todas las solicitudes HTTP entrantes al backend para validar el token
+**security/JwtFilter.java:** Actúa como un filtro de seguridad encargado de interceptar todas las solicitudes HTTP entrantes al backend para validar el token
 JWT enviado por el cliente. Su función principal es verificar que el token sea válido antes de permitir el acceso a los endpoints protegidos. 
 
-security/JwtUtil.java: Se encarga de generar, validar y extraer información de los tokens JWT utilizados para la autenticación de los usuarios dentro del sistema.
+**security/JwtUtil.java:** Se encarga de generar, validar y extraer información de los tokens JWT utilizados para la autenticación de los usuarios dentro del sistema.
 
-security/SecurityConfig.java: Aqui se configura la seguridad del backend, definiendo qué endpoints son públicos, cuáles requieren autenticación y cómo se aplica el filtro de JWT en cada solicitud HTTP.
+**security/SecurityConfig.java:** Aqui se configura la seguridad del backend, definiendo qué endpoints son públicos, cuáles requieren autenticación y cómo se aplica el filtro de JWT en cada solicitud HTTP.
 
 ---
 
