@@ -58,6 +58,14 @@ Base de datos relacional encargada de almacenar la información del sistema.
 
 * PostgreSQL
 
+Responsabilidades:
+
+* Almacenamiento de datos
+* Gestión de relaciones
+* Soporte a consultas 
+* Seguridad de datos
+* Registro de auditoría y trazabilidad
+
 ---
 
 ### Almacenamiento de Archivos
