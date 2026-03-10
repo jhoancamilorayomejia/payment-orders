@@ -20,15 +20,15 @@ Funciones principales:
 
 * Login de usuario
 * Dashboard dinámico según rol
-* Crear órdenes
+* Crear órdenes (solo Operator)
 * Listar órdenes con filtros
 * Ver detalle de orden
-* Subir factura
+* Subir factura (solo OEPERATOR)
 * Aprobar o rechazar órdenes (solo ADMIN)
 
-Tecnología usada:
+Tecnologías usadas:
 
-* Angular
+* Angular(TypeScript)
 
 Responsabilidades:
 * Mostrar pantallas
@@ -40,7 +40,7 @@ Responsabilidades:
 
 ### Backend
 
-API REST desarrollada con Spring Boot que gestiona la lógica de negocio.
+API REST desarrollada con Spring Boot(Java) que gestiona la lógica.
 
 Responsabilidades:
 
@@ -210,16 +210,16 @@ Almacena los usuarios del sistema.
 
 Campos principales:
 
-id
+id: 
 Identificador único del usuario.
 
-email
+email:
 Correo electrónico utilizado para autenticación.
 
-password
+password:
 Contraseña almacenada de forma encriptada.
 
-rol
+rol:
 Rol del usuario dentro del sistema (ADMIN u OPERATOR).
 
 
@@ -231,34 +231,34 @@ Tabla principal que almacena las órdenes de pago.
 
 Campos principales:
 
-id
+id:
 Identificador de la orden.
 
-title
+title:
 Nombre o título de la orden.
 
-description
+description:
 Descripción de la orden.
 
-amount
+amount:
 Monto asociado a la orden.
 
-status
+status:
 Estado actual de la orden.
 
-invoice_url
+invoice_url:
 URL del archivo de factura almacenado en el sistema de archivos.
 
-created_by
+created_by:
 Usuario que creó la orden.
 
-approved_by
+approved_by:
 Usuario que aprobó la orden.
 
-created_date
+created_date:
 Fecha de creación.
 
-approved_date
+approved_date:
 Fecha de aprobación.
 
 ---
@@ -271,22 +271,22 @@ Cada vez que una orden cambia de estado, un **trigger en la base de datos** inse
 
 Campos principales:
 
-id
+id:
 Identificador del registro.
 
-order_id
+order_id:
 Orden asociada al cambio.
 
-old_status
+old_status:
 Estado anterior de la orden.
 
-new_status
+new_status:
 Nuevo estado de la orden.
 
-changed_date
+changed_date:
 Fecha del cambio.
 
-changed_by
+changed_by:
 Usuario que realizó el cambio.
 
 ---
@@ -313,13 +313,14 @@ Error interno del servidor.
 
 ---
 
-# 12. Cómo Ejecutar el Proyecto
+# 6. Cómo Ejecutar el Proyecto
 
 ## Backend
 
 1. Clonar el repositorio.  (desde la terminal en donde quieres guardar el proyecto escribes: git clone y colocas el SHH del repositorio)
 2. Configurar las variables de entorno.
-3. Ejecutar el proyecto Spring Boot.
+3. Debe tener en cuenta las Base de datos que se indico antreriormente.
+4. Ejecutar el proyecto Spring Boot.
 
 Ejemplo:
 Si quieres ejecutar solo el backend ingresas a la carpeta backend (cd backend) y ejecutas:
@@ -337,26 +338,25 @@ npm install
    
 ng serve
 
-3. Ejecutar la aplicación.
+3. Ejecutar la aplicación completa (Backend y Frontend) al mismo tiempo.
 
 npm start
 
 ---
 
 
-# 14. Decisiones Técnicas
+# 7. Decisiones Técnicas
 
 Spring Boot fue elegido por su integración con Spring Security y facilidad para construir APIs REST robustas.
 
-PostgreSQL fue seleccionado por su soporte avanzado para triggers, procedimientos almacenados y consistencia transaccional.
+PostgreSQL fue seleccionado por su soporte avanzado para triggers, procedimientos almacenados, consistencia transaccional y buen manejo visual en el pgAdmin.
 
-La arquitectura por capas fue implementada para mantener una clara separación de responsabilidades y facilitar el mantenimiento del sistema.
+Angular por la arquitectura por capas fue implementada para mantener una clara separación de responsabilidades y facilitar el mantenimiento del sistema.
 
 ---
 
-# 15. Funcionalidades Pendientes o Mejoras Futuras
+# 8. Funcionalidades Pendientes o Mejoras Futuras
 
-* Error al mostrar la Factura o imagen (Impresión en formato estilistico)
 * No se logró implementar buscar todas las órdenes con estado REJECTED cuya fecha de creación sea anterior a la fecha proporcionada. Actualizar dichas órdenes cambiando su estado a ARCHIVED.
 
 
@@ -392,3 +392,4 @@ $$;
 CALL archive_old_rejected_orders();
 ```
 
+* Integración Externa: Cuando una orden pase a estado APPROVED, el sistema debe notificar automáticamente a un sistema externo mediante una llamada HTTP `POST`.
