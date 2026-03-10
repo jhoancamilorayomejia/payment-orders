@@ -7,10 +7,6 @@
       Sistema de Órdenes
     </div>
 
-    <div class="user-info">
-      <span class="user-label">Usuario:</span>
-      <h3>{{ currentUserEmail }} (ID: {{ currentUserId }})</h3>
-    </div>
 
     <div class="user-actions">
       <button class="logout-btn" (click)="logout()">
@@ -26,7 +22,7 @@
 
     <div class="table-container">
 
-      <h2>Lista de órdenes</h2>
+      <h2>Lista de órdenes | User: {{ currentUserEmail }} ID: {{ currentUserId }}  </h2>
 
       <!-- MENSAJE DE ÉXITO -->
       <div *ngIf="showSuccess" class="success-message">

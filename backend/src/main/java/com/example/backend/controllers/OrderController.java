@@ -33,11 +33,17 @@ public class OrderController {
         this.orderStatusLogRepository = orderStatusLogRepository;
     }
 
+    // =============================
+    // OBTENER TODAS LAS ORDENES
+    // =============================
     @GetMapping
     public List<Order> getOrders() {
         return orderRepository.findAll();
     }
 
+    // =============================
+    // CREAR NUEVA ORDEN
+    // =============================
     @PostMapping
     public ResponseEntity<?> createOrder(
             @RequestParam String title,
@@ -54,20 +60,17 @@ public class OrderController {
             order.setAmount(new BigDecimal(amount));
             order.setStatus(status);
 
-            // email del creador
             String userEmail = extractEmailFromToken(authHeader);
             order.setCreatedBy(userEmail);
-
             order.setCreatedDate(LocalDateTime.now());
             order.setApprovedDate(null);
             order.setApprovedBy(null);
 
-            // manejo de archivo
+            // Manejo de archivo adjunto
             if (file != null && !file.isEmpty()) {
                 String contentType = file.getContentType();
                 if (contentType == null || !(contentType.equals("application/pdf") ||
-                        contentType.equals("image/png") ||
-                        contentType.equals("image/jpeg"))) {
+                        contentType.equals("image/png") || contentType.equals("image/jpeg"))) {
                     return ResponseEntity.badRequest()
                             .body("Tipo de archivo no permitido. Solo PDF, PNG o JPG.");
                 }
@@ -96,6 +99,9 @@ public class OrderController {
         }
     }
 
+    // =============================
+    // ACTUALIZAR ESTADO DE ORDEN
+    // =============================
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateOrderStatus(
             @PathVariable Long id,
@@ -106,35 +112,29 @@ public class OrderController {
             Order order = orderRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Orden no encontrada"));
 
-            String oldStatus = order.getStatus(); // para historial
             order.setStatus(status);
 
             if (status.equalsIgnoreCase("APROBADO") || status.equalsIgnoreCase("RECHAZADO")) {
-                order.setApprovedBy(userId);  // ahora guarda userId
+                order.setApprovedBy(userId);
                 order.setApprovedDate(LocalDateTime.now());
             } else {
                 order.setApprovedBy(null);
                 order.setApprovedDate(null);
             }
 
-            // Guardar registro en order_status_log
-            OrderStatusLog log = new OrderStatusLog();
-            log.setOrderId(order.getId());
-            log.setOldStatus(oldStatus);
-            log.setNewStatus(status);
-            log.setChangedDate(LocalDateTime.now());
-            log.setChangedBy(userId);
-            orderStatusLogRepository.save(log);
+            // Guardar la orden (el trigger se encargará del log)
+            orderRepository.save(order);
 
-            Order updated = orderRepository.save(order);
-            return ResponseEntity.ok(updated);
+            return ResponseEntity.ok(order);
 
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error al actualizar la orden: " + e.getMessage());
         }
     }
 
-    // Nuevo endpoint para historial de estados
+    // =============================
+    // HISTORIAL POR ORDEN
+    // =============================
     @GetMapping("/{id}/status-log")
     public ResponseEntity<?> getOrderStatusLog(@PathVariable Long id) {
         try {
@@ -146,28 +146,21 @@ public class OrderController {
     }
 
     // =============================
-// HISTORIAL GLOBAL DE ESTADOS
-// =============================
-@GetMapping("/status-log")
-public ResponseEntity<?> getAllOrderStatusLogs() {
-
-    try {
-
-        List<OrderStatusLog> logs = orderStatusLogRepository
-                .findAllByOrderByChangedDateDesc();
-
-        return ResponseEntity.ok(logs);
-
-    } catch (Exception e) {
-
-        return ResponseEntity
-                .status(500)
-                .body("Error al obtener historial global: " + e.getMessage());
-
+    // HISTORIAL GLOBAL
+    // =============================
+    @GetMapping("/status-log")
+    public ResponseEntity<?> getAllOrderStatusLogs() {
+        try {
+            List<OrderStatusLog> logs = orderStatusLogRepository.findAllByOrderByChangedDateDesc();
+            return ResponseEntity.ok(logs);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al obtener historial global: " + e.getMessage());
+        }
     }
 
-}
-
+    // =============================
+    // EXTRAER EMAIL DEL TOKEN JWT
+    // =============================
     private String extractEmailFromToken(String authHeader) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
@@ -176,5 +169,4 @@ public ResponseEntity<?> getAllOrderStatusLogs() {
         return "desconocido";
     }
 
-    
 }

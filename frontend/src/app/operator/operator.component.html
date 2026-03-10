@@ -3,7 +3,7 @@
   <!-- Barra superior -->
   <div class="topbar">
     <div class="logo">Sistema de Órdenes</div>
-    <h3>Usuario: {{ currentUserEmail }}</h3>
+
     <div class="user-info">
       <button class="logout-btn" (click)="logout()">Salir</button>
     </div>
@@ -12,7 +12,7 @@
   <!-- Contenido del panel -->
   <div class="operator-wrapper">
     <div class="card">
-      <h2>Crear Nueva Orden</h2>
+      <h2>Crear Nueva Orden   User:{{ currentUserEmail }}</h2>
       <p class="subtitle">Ingresa la información de la orden de pago</p>
 
       <form (ngSubmit)="createOrder()" #orderForm="ngForm">

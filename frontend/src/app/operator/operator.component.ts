@@ -36,9 +36,7 @@ export class OperatorComponent {
   isModalOpen: boolean = false;
 
   constructor(private orderService: OrderService, private router: Router) {
-
     const token = localStorage.getItem('token');
-
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
@@ -50,26 +48,23 @@ export class OperatorComponent {
     }
   }
 
-  // -------- Manejo de archivos --------
+  // ===========================
+  // MANEJO DE ARCHIVOS
+  // ===========================
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (!file) return;
 
-    const allowedTypes = [
-      'application/pdf',
-      'image/png',
-      'image/jpeg',
-      'image/jpg'
-    ];
+    const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
 
     if (!allowedTypes.includes(file.type)) {
-      alert('Tipo de archivo no permitido. Solo PDF, PNG o JPG.');
+      alert('❌ Tipo de archivo no permitido. Solo PDF, PNG o JPG.');
       this.selectedFile = null;
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert('Archivo demasiado grande. Máximo 5MB.');
+      alert('❌ Archivo demasiado grande. Máximo 5MB.');
       this.selectedFile = null;
       return;
     }
@@ -77,11 +72,11 @@ export class OperatorComponent {
     this.selectedFile = file;
   }
 
-  // -------- Crear nueva orden --------
+  // ===========================
+  // CREAR NUEVA ORDEN
+  // ===========================
   createOrder() {
-
     const formData = new FormData();
-
     formData.append('title', this.order.title);
     formData.append('description', this.order.description);
     formData.append('amount', this.order.amount.toString());
@@ -93,9 +88,8 @@ export class OperatorComponent {
     }
 
     this.orderService.createOrder(formData).subscribe({
-
       next: () => {
-        alert("Orden creada correctamente");
+        alert('✅ Orden creada correctamente');
 
         // Reset formulario
         this.order = {
@@ -105,27 +99,30 @@ export class OperatorComponent {
           status: 'PENDIENTE',
           created_by: this.currentUserEmail
         };
-
         this.selectedFile = null;
       },
-
-      error: (err) => {
-        console.error(err);
-        alert(err.error);
-      }
-
+      error: (err) => this.handleHttpError(err, 'Crear orden')
     });
   }
 
-  // -------- Logout --------
-  logout() {
-    localStorage.removeItem('token');
-    this.router.navigate(['/']);
+  // ===========================
+  // CARGAR ÓRDENES
+  // ===========================
+  loadOrders() {
+    this.orderService.getOrders().subscribe({
+      next: (data) => {
+        // Filtramos solo las órdenes creadas por el usuario actual
+        this.ordersList = data.filter(order => order.createdBy === this.currentUserEmail);
+      },
+      error: (err) => this.handleHttpError(err, 'Cargar órdenes')
+    });
   }
 
-  // -------- Modal --------
+  // ===========================
+  // MODAL
+  // ===========================
   openModal() {
-    this.loadOrders(); // carga órdenes dinámicamente
+    this.loadOrders();
     this.isModalOpen = true;
   }
 
@@ -133,15 +130,28 @@ export class OperatorComponent {
     this.isModalOpen = false;
   }
 
-  // -------- Cargar órdenes --------
-  loadOrders() {
-  this.orderService.getOrders().subscribe({
-    next: (data) => {
-      // Filtramos solo las órdenes creadas por el usuario actual
-      this.ordersList = data.filter(order => order.createdBy === this.currentUserEmail);
-    },
-    error: (err) => console.error('Error cargando órdenes:', err)
-  });
-}
+  // ===========================
+  // LOGOUT
+  // ===========================
+  logout() {
+    localStorage.removeItem('token');
+    this.router.navigate(['/']);
+  }
 
+  // ===========================
+  // MANEJO CENTRALIZADO DE ERRORES
+  // ===========================
+  private handleHttpError(err: any, context: string = '') {
+    console.error(err);
+
+    let msg = '';
+
+    if (err.status === 0) msg = '⚠️ No hay conexión con el servidor';
+    else if (err.status === 404) msg = '❌ Recurso no encontrado';
+    else if (err.status === 403) msg = '🚫 No tienes permiso';
+    else if (err.status === 500) msg = '⚠️ Error interno del servidor';
+    else msg = `Error desconocido: ${err.error?.message || err.statusText || err}`;
+
+    alert(context ? `${context}: ${msg}` : msg);
+  }
 }
