@@ -273,3 +273,33 @@ La arquitectura por capas fue implementada para mantener una clara separación d
 * Error al mostrar la Factura o imagen (Impresión en formato estilistico)
 * No se logró implementar buscar todas las órdenes con estado REJECTED cuya fecha de creación sea anterior a la fecha proporcionada. Actualizar dichas órdenes cambiando su estado a ARCHIVED.
 
+
+# Punto que se tuvieron en cuenta: 
+* Para lograr cambiar a ARCHIVADO despues de un lapso de tiempo (1 minuto) las ordenes que estaban en estado RECHAZADO se necesito ajustar un intervalo en el procedimiento.
+* Ejecutar en mi postgresql:
+
+CREATE OR REPLACE PROCEDURE archive_old_rejected_orders()
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    BEGIN
+        -- Actualiza todas las órdenes rechazadas con más de 1 minuto de antigüedad
+        UPDATE orders
+        SET status = 'ARCHIVADO'
+        WHERE status = 'RECHAZADO'
+          AND created_date <= NOW() - INTERVAL '1 minute';
+
+        COMMIT;
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            RAISE;
+    END;
+END;
+$$;
+
+* Y posterior ejecutar:
+
+CALL archive_old_rejected_orders();
+
+
