@@ -117,8 +117,86 @@ contiene las clases que representan las entidades del dominio del sistema.Cada c
 El sistema utiliza las siguientes tablas principales.
 
 ---
+##Base de Datos payment-orders
+Sentencia:
+```
+CREATE DATABASE payment_orders;
+```
 
-## Tabla "user"
+## Tabla "user" 
+Sentencia:
+```
+CREATE TABLE "user" (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(150) NOT NULL,
+    password VARCHAR(250) NOT NULL,
+    rol VARCHAR(50) NOT NULL
+);
+```
+
+Insertar Datos:
+```
+-- Insertar usuarios
+INSERT INTO "user" (email, password, rol)
+VALUES 
+('camilorayomejia@gmail.com', '123', 'ADMIN'),
+('jhoan@gmail.com', '1234', 'OPERATOR'),
+('hectorvelez@gmail.com', '1234', 'OPERATOR'),
+('juandanielc@gmail.com', '1234', 'ADMIN');
+```
+
+
+Tabla orders;
+
+```
+-- Tabla orders
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    description TEXT,
+    amount NUMERIC(12,2),
+    status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+    invoice_url VARCHAR(250),
+    created_by VARCHAR(150),
+    approved_by INTEGER,
+    created_date TIMESTAMP DEFAULT NOW()
+);
+```
+
+Tabla order_status_log: para cuando se cambia el estado de la ordern en la tabla orders automaticamente hace un tiggers
+
+```
+-- Tabla order_status_log
+CREATE TABLE order_status_log (
+    id SERIAL PRIMARY KEY,
+    order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
+    old_status VARCHAR(50),
+    new_status VARCHAR(50),
+    changed_at TIMESTAMP DEFAULT NOW(),
+    changed_by INTEGER
+);
+```
+Tiggers:
+
+```
+-- Función para trigger que registra cambios de estado
+CREATE OR REPLACE FUNCTION log_order_status_change()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.status <> OLD.status THEN
+        INSERT INTO order_status_log(order_id, old_status, new_status, changed_at, changed_by)
+        VALUES (OLD.id, OLD.status, NEW.status, NOW(), NEW.approved_by);
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Crear trigger sobre orders
+CREATE TRIGGER trigger_order_status_change
+AFTER UPDATE ON orders
+FOR EACH ROW
+EXECUTE FUNCTION log_order_status_change();
+```
 
 Almacena los usuarios del sistema.
 
