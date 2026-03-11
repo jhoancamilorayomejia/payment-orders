@@ -93,7 +93,7 @@ https://localhost8080/custom-response
 
 # 3. Estructura del Proyecto
 
-La estructura del backend sigue una arquitectura por capas para separar responsabilidades.
+La estructura del BACKEND sigue una arquitectura por capas para separar responsabilidades.
 
 **backend/src/main/java/com/example/backend/config/Web.Config:** Se encarga de configurar recursos estáticos personalizados en la aplicación. Específicamente permite que los archivos almacenados en la carpeta "uploads" del backend puedan ser accedidos mediante una URL pública.
 
@@ -123,6 +123,26 @@ JWT enviado por el cliente. Su función principal es verificar que el token sea 
 **security/JwtUtil.java:** Se encarga de generar, validar y extraer información de los tokens JWT utilizados para la autenticación de los usuarios dentro del sistema.
 
 **security/SecurityConfig.java:** Aqui se configura la seguridad del backend, definiendo qué endpoints son públicos, cuáles requieren autenticación y cómo se aplica el filtro de JWT en cada solicitud HTTP.
+
+
+FRONTEND
+La estructura del FRONTEND sigue una arquitectura por capas para separar responsabilidades.
+
+**src/app/dashboard/app.component.ts & app.component.ts:** 
+ - Gestiona el flujo principal de la aplicación, incluyendo inicio de sesión de usuarios y redirección según el rol (ADMIN o OPERATOR).
+ - Maneja la persistencia de la sesión mediante tokens JWT y verifica su expiración.
+ - Controla la apertura/cierre del modal de órdenes aprobadas y la obtención de los datos desde el backend.
+
+**src/app/dashboard/dashboard.component.ts & dashboar.component.ts**
+Este componente gestiona la vista principal del dashboard, mostrando la lista de órdenes, permitiendo filtrar, ver historial, actualizar estados y descargar archivos adjuntos. También maneja el login/logout de usuarios en el frontend.
+
+**guards/auth.guard.ts:** Este guard protege rutas del frontend, asegurándose de que solo usuarios autenticados puedan acceder a ciertas páginas. Además, valida que el usuario tenga el rol permitido según la configuración de la ruta.
+
+**interceptors/token.interceptor.ts**: Intercepta todas las solicitudes HTTP salientes y agrega automáticamente el token JWT en el encabezado Authorization si el usuario está logueado. También maneja errores de autenticación (401), forzando al usuario a reingresar en caso de sesión expirada.
+
+**operator/operator.component.html & operator.component.ts:** Este componente permite a los operadores crear nuevas órdenes, subir archivos adjuntos (PDF, PNG, JPG) y consultar las órdenes que ellos mismos han creado. También gestiona modals para mostrar listas de órdenes y manejar la interfaz de usuario de forma interactiva.
+
+**services/operator.service.ts:** Proporciona métodos para interactuar con el backend y manejar órdenes, incluyendo la obtención de todas las órdenes y la creación de nuevas órdenes (con soporte para archivos adjuntos). Se encarga de enviar los headers de autenticación en cada petición. 
 
 ---
 
