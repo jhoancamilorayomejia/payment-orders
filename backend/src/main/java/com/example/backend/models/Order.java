@@ -4,6 +4,29 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * Order
+ *
+ * Responsabilidad dentro del sistema:
+ * Esta clase representa la entidad de "Orden" (tabla orders) dentro del sistema de gestión
+ * de pagos. Su función es modelar la información principal de una orden,
+ * incluyendo su título, descripción, monto, estado, comprobante (invoice), así como
+ * los datos relacionados con su creación y aprobación.
+ *
+ * Relación con otros componentes:
+ * Esta entidad es utilizada por los repositorios (OrderRepository) para realizar
+ * operaciones de persistencia en la base de datos mediante JPA/Hibernate.
+ * También es utilizada por los servicios y controladores del sistema 
+ * (OrderService y OrderController.java) para crear, consultar, actualizar y gestionar.
+ *
+ * Por qué existe dentro de la solución:
+ * Existe para mapear la tabla "orders" de la base de datos,
+ * permitiendo que Spring Boot utilice JPA para manejar automáticamente la
+ * persistencia de datos. Esto facilita la manipulación de órdenes dentro
+ * de la lógica del sistema y mantiene una estructura clara entre la base
+ * de datos y la aplicación.
+ */
+
 @Entity
 @Table(name = "orders")
 public class Order {

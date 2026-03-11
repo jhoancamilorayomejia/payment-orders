@@ -3,6 +3,29 @@ package com.example.backend.models;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * OrderStatusLog
+ *
+ * Responsabilidad dentro del sistema:
+ * Esta clase representa el historial de cambios de estado de una orden que viene de la tabla orders
+ * de mi posgresql. Su función es registrar cada vez que una orden cambia de estado,
+ * almacenando el estado anterior, el nuevo estado, la fecha del cambio
+ * y el usuario que realizó la modificación.
+ *
+ * Relación con otros componentes:
+ * Esta entidad está relacionada con la entidad Order mediante el campo
+ * orderId, el cual identifica a qué orden pertenece el registro del cambio.
+ * Es utilizada por los servicios o controladores (OrderController.java, PublicController.java)
+ * que gestionan la lógica de actualización de estados de las órdenes,
+ * así como por los repositorios que permiten persistir estos registros en la base de datos.
+ *
+ * Por qué existe dentro de la solución:
+ * Existe para mantener un historial de los cambios de estado
+ * de las órdenes dentro del sistema. Esto permite tener trazabilidad sobre
+ * quién realizó un cambio, cuándo se hizo (fecha y hora) y cuál fue la transición de estado,
+ * lo cual es útil para control, seguimiento y análisis de procesos.
+ */
+
 @Entity
 @Table(name = "order_status_log")
 public class OrderStatusLog {

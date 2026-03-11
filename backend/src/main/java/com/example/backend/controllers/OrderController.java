@@ -17,6 +17,38 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * OrderController
+ *
+ * Responsabilidad dentro del sistema:
+ * Esta clase es el controlador encargado de gestionar todas las operaciones
+ * relacionadas con las órdenes dentro del sistema. Permite crear órdenes,
+ * consultar órdenes existentes, actualizar su estado y consultar el historial
+ * de cambios de estado asociados a cada orden.
+ *
+ * Relación con otros componentes:
+ * Este controlador interactúa con varias capas del sistema:
+ * - OrderRepository: para realizar operaciones CRUD sobre la entidad Order
+ *   almacenada en la base de datos.
+ * - OrderStatusLogRepository: para consultar el historial de cambios de estado
+ *   de las órdenes.
+ * - JwtUtil: para extraer información del usuario autenticado a partir del
+ *   token JWT enviado desde el frontend.
+ *
+ * Además, es consumido por el frontend (Angular) mediante endpoints REST.
+ *
+ * Por qué existe dentro de la solución:
+ * Esta clase existe para centralizar la lógica de gestión de órdenes dentro
+ * del sistema. Permite que los usuarios puedan:
+ * - Crear nuevas órdenes con información básica y archivos adjuntos.
+ * - Consultar todas las órdenes registradas.
+ * - Actualizar el estado de una orden (por ejemplo APROBADO o RECHAZADO).
+ * - Consultar el historial de cambios de estado para auditoría y trazabilidad.
+ *
+ * También gestiona la validación básica de archivos adjuntos (tipo y tamaño)
+ * y el almacenamiento de estos documentos en la carpeta "uploads" del servidor.
+ */
+
 @RestController
 @RequestMapping("/api/orders")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -33,17 +65,17 @@ public class OrderController {
         this.orderStatusLogRepository = orderStatusLogRepository;
     }
 
-    // =============================
+    
     // OBTENER TODAS LAS ORDENES
-    // =============================
+   
     @GetMapping
     public List<Order> getOrders() {
         return orderRepository.findAll();
     }
 
-    // =============================
+   
     // CREAR NUEVA ORDEN
-    // =============================
+    
     @PostMapping
     public ResponseEntity<?> createOrder(
             @RequestParam String title,

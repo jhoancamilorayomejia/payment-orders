@@ -2,6 +2,30 @@ package com.example.backend.models;
 
 import jakarta.persistence.*;
 
+/**
+ * User
+ *
+ * Responsabilidad dentro del sistema:
+ * Esta clase representa la entidad de usuario ("user") dentro del sistema. Su función
+ * es almacenar la información básica necesaria para la autenticación y
+ * autorización de los usuarios, como el correo electrónico, la contraseña
+ * y el rol que determina sus permisos dentro de la aplicación.
+ *
+ * Relación con otros componentes:
+ * Esta entidad es utilizada por los repositorios para realizar operaciones
+ * de persistencia en la base de datos. También es utilizada por los componentes 
+ * de seguridad del sistema (como filtros JWT,
+ * controladores de autenticación y servicios de login) para validar
+ * credenciales y determinar los permisos de acceso de cada usuario mediante del token.
+ *
+ * Por qué existe dentro de la solución:
+ * Existe para mapear la tabla "user" de la base de datos a un objeto Java,
+ * permitiendo gestionar la autenticación y el control de acceso dentro
+ * del sistema. El campo "rol" permite diferenciar los tipos de usuarios,
+ * ADMIN u OPERATOR, y aplicar reglas de seguridad según el perfil del usuario
+ * Para dar acceso a nuevas rutas.
+ */
+
 @Entity
 @Table(name = "\"user\"") // tu tabla se llama "user"
 public class User {
@@ -12,7 +36,7 @@ public class User {
 
     private String email;
     private String password;
-    private String rol; // <-- agrega esta columna
+    private String rol; 
 
     // getters y setters
     public Long getId() {

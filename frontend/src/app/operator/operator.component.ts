@@ -4,6 +4,29 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { OrderService } from '../services/order.service';
 
+/**
+ * OperatorComponent
+ *
+ * Responsabilidad dentro del sistema:
+ * Este componente permite a los operadores crear nuevas órdenes,
+ * subir archivos adjuntos (PDF, PNG, JPG) y consultar las órdenes
+ * que ellos mismos han creado. También gestiona modals para mostrar
+ * listas de órdenes y manejar la interfaz de usuario de forma interactiva.
+ *
+ * Relación con otros componentes:
+ * - Consume el servicio OrderService para interactuar con la API REST
+ *   del backend y realizar operaciones CRUD sobre órdenes.
+ * - Utiliza Router para redirigir tras logout.
+ * - Trabaja con formularios y modales internos del componente para
+ *   actualizar la UI sin recargar la página.
+ *
+ * Por qué existe dentro de la solución:
+ * Centraliza la funcionalidad que un operador necesita para gestionar
+ * sus órdenes, incluyendo la creación, visualización y subida de archivos.
+ * Sin este componente, el operador no podría interactuar de manera
+ * directa y segura con el sistema desde la interfaz web.
+ */
+
 @Component({
   selector: 'app-operator',
   standalone: true,
@@ -72,9 +95,9 @@ export class OperatorComponent {
     this.selectedFile = file;
   }
 
-  // ===========================
+  // 
   // CREAR NUEVA ORDEN
-  // ===========================
+  // 
   createOrder() {
     const formData = new FormData();
     formData.append('title', this.order.title);

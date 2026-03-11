@@ -3,6 +3,26 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 
+/**
+ * AppComponent
+ *
+ * Responsabilidad dentro del sistema:
+ * - Gestiona el flujo principal de la aplicación, incluyendo inicio de sesión
+ *   de usuarios y redirección según el rol (ADMIN o OPERATOR).
+ * - Maneja la persistencia de la sesión mediante tokens JWT y verifica su expiración.
+ * - Controla la apertura/cierre del modal de órdenes aprobadas y la obtención
+ *   de los datos desde el backend.
+ *
+ * Relación con otros componentes:
+ * - Se comunica con el backend a través de HTTP para login y recuperación de órdenes.
+ * - Interactúa con rutas de Angular (Router) para redireccionar según rol.
+ * - Funciona en conjunto con AuthGuard y tokenInterceptor para seguridad de rutas.
+ *
+ * Por qué existe dentro de la solución:
+ * Centraliza la gestión de sesión, navegación y acceso a los datos globales
+ * de órdenes aprobadas, sirviendo como punto de entrada principal de la app.
+ */
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -23,7 +43,7 @@ export class AppComponent implements OnInit {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  ngOnInit() {
+  ngOnInit() {  //aqui verifica si el usuario tiene la sesion activa
 
     const token = localStorage.getItem("token");
 
@@ -34,7 +54,7 @@ export class AppComponent implements OnInit {
       const role = localStorage.getItem("role");
 
       if (role === 'ADMIN') {
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/dashboard']);  //ruta asignada
       }
 
       if (role === 'OPERATOR') {
@@ -90,7 +110,7 @@ export class AppComponent implements OnInit {
 
   }
 
-  // 🔐 verificar expiración del token
+  //  verificar expiración del token
   checkTokenExpiration() {
 
     const token = localStorage.getItem("token");
@@ -101,7 +121,7 @@ export class AppComponent implements OnInit {
 
       const decoded: any = jwtDecode(token);
 
-      const exp = decoded.exp * 1000; // convertir a milisegundos
+      const exp = decoded.exp * 1000;
       const now = Date.now();
 
       if (exp < now) {
@@ -127,7 +147,7 @@ export class AppComponent implements OnInit {
 
   }
 
-  // 🔹 NUEVOS MÉTODOS PARA EL MODAL
+  // 🔹
   openOrdersModal() {
   this.isOrdersModalOpen = true;
 
@@ -135,7 +155,7 @@ export class AppComponent implements OnInit {
   this.http.get<OrderData[]>('http://localhost:8080/custom-response')
     .subscribe({
       next: (res) => {
-        // 🔹 Filtrar solo los aprobados
+        // 🔹 mostrar solo los aprobados
         this.orders = res.filter(order => order.status === 'APROBADO');
       },
       error: (err) => {
@@ -151,7 +171,7 @@ export class AppComponent implements OnInit {
 
 }
 
-// 🔹 NUEVA INTERFAZ para tipar los datos del endpoint
+// 🔹  INTERFAZ para tipar los datos del endpoint
 interface OrderData {
   id: number;
   status: string;

@@ -3,6 +3,29 @@ import { Router } from '@angular/router';
 import { OrderService, Order, OrderStatusLog } from '../services/order.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
+/**
+ * DashboardComponent
+ *
+ * Responsabilidad dentro del sistema:
+ * Este componente gestiona la vista principal del dashboard, mostrando
+ * la lista de órdenes, permitiendo filtrar, ver historial, actualizar
+ * estados y descargar archivos adjuntos. También maneja el login/logout
+ * de usuarios en el frontend.
+ *
+ * Relación con otros componentes:
+ * - Consume servicios de backend a través de OrderService para obtener
+ *   datos de órdenes y logs de estado.
+ * - Interactúa con modales para actualizar estados o ver historial.
+ * - Usa DomSanitizer para mostrar archivos PDF/imagenes de manera segura.
+ * - Trabaja con Router para redirigir a rutas públicas tras logout.
+ *
+ * Por qué existe dentro de la solución:
+ * Facilita la interacción del usuario con el sistema de órdenes, centralizando
+ * la lógica de presentación y comunicación con la API. Sin este componente,
+ * los usuarios no podrían visualizar ni gestionar las órdenes de manera
+ * eficiente desde la interfaz web.
+ */
+
 interface OrderFilter {
   status: string;
   createdBy: string;
@@ -31,7 +54,7 @@ export class DashboardComponent implements OnInit {
   pdfBlobUrl: SafeResourceUrl | null = null;
   isViewerOpen = false;
 
-  currentUserEmail = '';
+  currentUserEmail = '';    //guarda la informacion del usuario que inicio session
   currentUserId: number | null = null;
 
   isUpdateModalOpen = false;
@@ -76,9 +99,9 @@ export class DashboardComponent implements OnInit {
     this.loadOrders();
   }
 
-  // =============================
+  //
   // CARGAR ORDENES
-  // =============================
+  //
   loadOrders() {
     this.orderService.getOrders().subscribe({
       next: (data: Order[]) => this.orders = data,
@@ -86,9 +109,9 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // =============================
-  // FILTROS
-  // =============================
+  //
+  // filtros de consultas
+  //
   applyFilters() {
     this.orderService.getOrders().subscribe({
       next: (data: Order[]) => {
