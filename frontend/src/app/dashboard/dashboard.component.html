@@ -1,337 +1,330 @@
 <div class="dashboard-wrapper">
 
   <!-- ================= TOPBAR ================= -->
-  <div class="topbar">
-
+  <nav class="topbar">
     <div class="logo">
-      Sistema de Órdenes
+      <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+        <rect x="2" y="2" width="24" height="24" fill="none" stroke="#d4b896" stroke-width="1.2"/>
+        <rect x="7" y="7" width="14" height="14" fill="rgba(212,184,150,0.08)" stroke="#d4b896" stroke-width="0.8"/>
+        <rect x="12" y="12" width="4" height="4" fill="#d4b896"/>
+      </svg>
+      <span class="logo-text">Ordenes de Pagos</span>
     </div>
 
-
-    <div class="user-actions">
-      <button class="logout-btn" (click)="logout()">
+    <div class="topbar-right">
+      <div class="user-badge">
+        <div class="avatar">{{ currentUserEmail ? currentUserEmail[0].toUpperCase() : 'U' }}</div>
+        <div class="user-info-block">
+          <span class="user-email">{{ currentUserEmail }}</span>
+          <span class="user-id-label">ID {{ currentUserId }}</span>
+        </div>
+      </div>
+      <button class="btn-logout" (click)="logout()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Salir
       </button>
     </div>
+  </nav>
 
-  </div>
+  <!-- ================= MAIN ================= -->
+  <main class="page-main">
 
-
-  <!-- ================= CONTENEDOR PRINCIPAL ================= -->
-  <div class="green-container">
-
-    <div class="table-container">
-
-      <h2>Lista de órdenes | User: {{ currentUserEmail }} ID: {{ currentUserId }}  </h2>
-
-      <!-- MENSAJE DE ÉXITO -->
-      <div *ngIf="showSuccess" class="success-message">
-        {{ successMessage }}
-      </div>
-
-
-      <!-- ================= FILTROS ================= -->
-      <div class="filter-container">
-
-        <select [(ngModel)]="filter.status">
-          <option value="">Todos</option>
-          <option value="PENDIENTE">Pendiente</option>
-          <option value="APROBADO">Aprobado</option>
-          <option value="RECHAZADO">Rechazado</option>
-        </select>
-
-        <input
-          type="text"
-          placeholder="Filtrar por creador"
-          [(ngModel)]="filter.createdBy"
-        />
-
-        <input
-          type="text"
-          placeholder="Filtrar por aprobado por"
-          [(ngModel)]="filter.approvedBy"
-        />
-
-        <input type="date" [(ngModel)]="filter.createdDateFrom" />
-        <input type="date" [(ngModel)]="filter.createdDateTo" />
-
-        <button (click)="applyFilters()">Aplicar</button>
-
-        <button (click)="resetFilters()">Limpiar</button>
-
-        <button
-          class="history-btn"
-          (click)="openGlobalHistory(); $event.stopPropagation()"
-        >
-          Ver todos los cambios
-        </button>
-
-      </div>
-
-
-      <!-- ================= TABLA ================= -->
-      <table class="styled-table">
-
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Título</th>
-            <th>Descripción</th>
-            <th>Monto</th>
-            <th>Estado</th>
-            <th>Creado por</th>
-            <th>Fecha creación</th>
-            <th>Aprobado por</th>
-            <th>Fecha aprobación</th>
-            <th>Factura</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-
-        <tbody>
-
-          <tr *ngFor="let order of orders" (click)="selectedOrder = order">
-
-            <td>{{ order.id }}</td>
-            <td>{{ order.title }}</td>
-
-            <td class="desc">
-              {{ order.description }}
-            </td>
-
-            <td>${{ order.amount }}</td>
-
-            <td>
-              <span class="status" [ngClass]="order.status.toLowerCase()">
-                {{ order.status }}
-              </span>
-            </td>
-
-            <td>{{ order.createdBy }}</td>
-
-            <td>
-              {{ order.createdDate | date:'yyyy-MM-dd HH:mm' }}
-            </td>
-
-            <td>
-              {{ order.approvedBy || 'Pendiente sin aprobar' }}
-            </td>
-
-            <td>
-              {{
-                order.approvedDate
-                  ? (order.approvedDate | date:'yyyy-MM-dd HH:mm')
-                  : 'Sin fecha de aprobación'
-              }}
-            </td>
-
-
-            <!-- FACTURA -->
-            <td>
-
-              <ng-container *ngIf="order.invoiceUrl; else noFile">
-
-                <button (click)="openFile(order.invoiceUrl)">
-                  Ver
-                </button>
-
-                <button (click)="downloadFile(order.invoiceUrl)">
-                  Descargar
-                </button>
-
-              </ng-container>
-
-              <ng-template #noFile>
-                No hay
-              </ng-template>
-
-            </td>
-
-
-            <!-- ACCIONES -->
-            <td>
-
-              <button
-                class="update-btn"
-                (click)="openUpdateModal(order)"
-                [disabled]="order.status !== 'PENDIENTE'"
-              >
-                Actualizar
-              </button>
-
-              <button
-                class="history-btn"
-                (click)="openHistoryModal(order); $event.stopPropagation()"
-              >
-                Ver Historial
-              </button>
-
-            </td>
-
-          </tr>
-
-        </tbody>
-
-      </table>
-
+    <!-- TOAST ÉXITO -->
+    <div *ngIf="showSuccess" class="toast">
+      <span class="toast-check">✓</span>
+      {{ successMessage }}
     </div>
 
-
-    <!-- ================= VISOR PDF ================= -->
-    <div *ngIf="isViewerOpen" class="viewer-modal">
-
-      <div class="viewer-content">
-
-        <button class="close-btn" (click)="closeViewer()">
-          ✖ Cerrar
+    <!-- ================= FILTROS ================= -->
+    <section class="filters-card">
+      <div class="filters-top">
+        <span class="section-label">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          Filtros
+        </span>
+        <button class="btn-global-history" (click)="openGlobalHistory(); $event.stopPropagation()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Historial global
         </button>
-
-        <iframe
-          *ngIf="pdfBlobUrl"
-          [src]="pdfBlobUrl"
-          width="100%"
-          height="600px"
-        ></iframe>
-
       </div>
 
-    </div>
-
-
-    <!-- ================= MODAL ACTUALIZAR ORDEN ================= -->
-    <div
-      *ngIf="isUpdateModalOpen && selectedOrder?.status === 'PENDIENTE'"
-      class="modal-overlay"
-    >
-
-      <div class="modal-box">
-
-        <h2>Actualizar Orden</h2>
-
-        <div class="modal-content">
-
-          <p><strong>ID:</strong> {{ selectedOrder?.id }}</p>
-          <p><strong>Título:</strong> {{ selectedOrder?.title }}</p>
-          <p><strong>Descripción:</strong> {{ selectedOrder?.description }}</p>
-          <p><strong>Monto:</strong> ${{ selectedOrder?.amount }}</p>
-          <p><strong>Estado actual:</strong> {{ selectedOrder?.status }}</p>
-
-          <label>Nuevo estado</label>
-
-          <select [(ngModel)]="newStatus">
+      <div class="filters-row">
+        <div class="field-wrap">
+          <label>Estado</label>
+          <select [(ngModel)]="filter.status">
+            <option value="">Todos</option>
+            <option value="PENDIENTE">Pendiente</option>
             <option value="APROBADO">Aprobado</option>
             <option value="RECHAZADO">Rechazado</option>
           </select>
-
-          <div class="modal-buttons">
-
-            <button class="save-btn" (click)="saveStatus()">
-              Guardar
-            </button>
-
-            <button class="cancel-btn" (click)="closeUpdateModal()">
-              Cancelar
-            </button>
-
-          </div>
-
         </div>
 
+        <div class="field-wrap">
+          <label>Creado por</label>
+          <input type="text" placeholder="Buscar..." [(ngModel)]="filter.createdBy" />
+        </div>
+
+        <div class="field-wrap">
+          <label>Aprobado por</label>
+          <input type="text" placeholder="Buscar..." [(ngModel)]="filter.approvedBy" />
+        </div>
+
+        <div class="field-wrap">
+          <label>Desde</label>
+          <input type="date" [(ngModel)]="filter.createdDateFrom" />
+        </div>
+
+        <div class="field-wrap">
+          <label>Hasta</label>
+          <input type="date" [(ngModel)]="filter.createdDateTo" />
+        </div>
+
+        <div class="filter-btns">
+          <button class="btn-apply" (click)="applyFilters()">Aplicar</button>
+          <button class="btn-clear" (click)="resetFilters()">Limpiar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TABLA ================= -->
+    <!-- ================= CARDS GRID ================= -->
+<section class="table-card">
+  <div class="table-head-row">
+    <h2 class="table-title">Lista de órdenes</h2>
+    <span class="count-badge">{{ orders.length }} registros</span>
+  </div>
+
+  <div class="orders-grid">
+    <div *ngFor="let order of orders; let i = index"
+         class="order-card"
+         [style.animation-delay]="(i * 40) + 'ms'"
+         (click)="selectedOrder = order">
+
+      <!-- Card header -->
+      <div class="card-header">
+        <span class="id-tag">#{{ order.id }}</span>
+        <span class="chip" [ngClass]="'chip--' + order.status.toLowerCase()">
+          <i class="chip-dot"></i>{{ order.status }}
+        </span>
+      </div>
+
+      <!-- Título y descripción -->
+      <div class="card-title-block">
+        <h3 class="card-title">{{ order.title }}</h3>
+        <p class="card-desc">{{ order.description }}</p>
+      </div>
+
+      <!-- Monto destacado -->
+      <div class="card-amount">${{ order.amount | number:'1.0-0' }}</div>
+
+      <!-- Meta info -->
+      <div class="card-meta">
+        <div class="meta-row">
+          <span class="meta-label">Creado por</span>
+          <span class="meta-value">{{ order.createdBy }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Fecha</span>
+          <span class="meta-value mono">{{ order.createdDate | date:'dd/MM/yy HH:mm' }}</span>
+        </div>
+        <div class="meta-row" *ngIf="order.approvedBy">
+          <span class="meta-label">Aprobado por</span>
+          <span class="meta-value">{{ order.approvedBy }}</span>
+        </div>
+        <div class="meta-row" *ngIf="order.approvedDate">
+          <span class="meta-label">Aprobación</span>
+          <span class="meta-value mono">{{ order.approvedDate | date:'dd/MM/yy HH:mm' }}</span>
+        </div>
+      </div>
+
+      <!-- Footer: factura + acciones -->
+      <div class="card-footer">
+        <div class="invoice-btns" *ngIf="order.invoiceUrl; else noInvoice">
+          <button class="btn-view-file"
+                  (click)="openFile(order.invoiceUrl); $event.stopPropagation()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Factura
+          </button>
+          <button class="btn-dl-file"
+                  (click)="downloadFile(order.invoiceUrl); $event.stopPropagation()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+        </div>
+        <ng-template #noInvoice><span class="empty-dash">Sin factura</span></ng-template>
+
+        <div class="action-btns">
+          <button class="btn-update"
+                  (click)="openUpdateModal(order); $event.stopPropagation()"
+                  [disabled]="order.status !== 'PENDIENTE'">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Actualizar
+          </button>
+          <button class="btn-hist"
+                  (click)="openHistoryModal(order); $event.stopPropagation()">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Historial
+          </button>
+        </div>
       </div>
 
     </div>
+  </div>
+</section>
+
+  </main>
 
 
-    <!-- ================= HISTORIAL POR ORDEN ================= -->
-    <div *ngIf="isHistoryModalOpen" class="history-modal-overlay">
+  <!-- ================= VISOR ARCHIVO ================= -->
+  <div *ngIf="isViewerOpen" class="overlay" (click)="closeViewer()">
+    <div class="modal-viewer" (click)="$event.stopPropagation()">
+      <div class="modal-bar">
+        <span class="modal-bar-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Visor de Factura
+        </span>
+        <button class="btn-close-modal" (click)="closeViewer()">✕</button>
+      </div>
 
-      <div class="history-modal-box">
+      <div class="viewer-body">
+        <div *ngIf="isLoadingFile" class="viewer-state">
+          <div class="spinner"></div>
+          <p>Cargando archivo…</p>
+        </div>
 
-        <button class="close-history-btn" (click)="closeHistoryModal()">
-          ✖ Cerrar
-        </button>
+        <div *ngIf="fileError && !isLoadingFile" class="viewer-state viewer-error">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p>{{ fileError }}</p>
+        </div>
 
-        <h2>Historial de Estados</h2>
+        <iframe *ngIf="pdfBlobUrl && !isImageFile && !isLoadingFile && !fileError"
+                [src]="pdfBlobUrl"
+                class="pdf-iframe"
+                frameborder="0">
+        </iframe>
 
-        <table class="history-table">
+        <div *ngIf="isImageFile && imageBlobUrl && !isLoadingFile && !fileError" class="img-viewer">
+          <img [src]="imageBlobUrl" alt="Factura" />
+        </div>
+      </div>
+    </div>
+  </div>
 
+
+  <!-- ================= MODAL ACTUALIZAR ================= -->
+  <div *ngIf="isUpdateModalOpen && selectedOrder?.status === 'PENDIENTE'"
+       class="overlay"
+       (click)="closeUpdateModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-bar">
+        <span class="modal-bar-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Actualizar Orden
+        </span>
+        <button class="btn-close-modal" (click)="closeUpdateModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="info-grid">
+          <div class="info-cell">
+            <label>ID</label>
+            <span class="id-tag">#{{ selectedOrder?.id }}</span>
+          </div>
+          <div class="info-cell">
+            <label>Estado actual</label>
+            <span class="chip chip--pendiente"><i class="chip-dot"></i>{{ selectedOrder?.status }}</span>
+          </div>
+          <div class="info-cell span2">
+            <label>Título</label>
+            <span>{{ selectedOrder?.title }}</span>
+          </div>
+          <div class="info-cell span2">
+            <label>Descripción</label>
+            <span class="desc-text">{{ selectedOrder?.description }}</span>
+          </div>
+          <div class="info-cell">
+            <label>Monto</label>
+            <span class="amount-big">${{ selectedOrder?.amount | number:'1.0-0' }}</span>
+          </div>
+        </div>
+
+        <div class="field-wrap mt16">
+          <label>Nuevo estado</label>
+          <select [(ngModel)]="newStatus">
+            <option value="APROBADO">✅ Aprobado</option>
+            <option value="RECHAZADO">❌ Rechazado</option>
+          </select>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-save" (click)="saveStatus()">Guardar cambio</button>
+          <button class="btn-cancel" (click)="closeUpdateModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================= HISTORIAL POR ORDEN ================= -->
+  <div *ngIf="isHistoryModalOpen" class="overlay" (click)="closeHistoryModal()">
+    <div class="modal-box modal-wide" (click)="$event.stopPropagation()">
+      <div class="modal-bar">
+        <span class="modal-bar-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Historial — Orden #{{ selectedOrder?.id }}
+        </span>
+        <button class="btn-close-modal" (click)="closeHistoryModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="historyData.length === 0" class="empty-state">Sin cambios registrados.</div>
+        <table *ngIf="historyData.length > 0" class="hist-table">
           <thead>
             <tr>
-              <th>Fecha</th>
-              <th>Estado Anterior</th>
-              <th>Estado Nuevo</th>
-              <th>Usuario ID</th>
+              <th>Fecha</th><th>Estado anterior</th><th>Nuevo estado</th><th>Modificado por</th>
             </tr>
           </thead>
-
           <tbody>
-
             <tr *ngFor="let h of historyData">
-
-              <td>{{ h.changedDate | date:'yyyy-MM-dd HH:mm' }}</td>
-              <td>{{ h.oldStatus }}</td>
-              <td>{{ h.newStatus }}</td>
+              <td class="cell-date">{{ h.changedDate | date:'dd/MM/yy HH:mm' }}</td>
+              <td><span class="chip" [ngClass]="'chip--' + h.oldStatus.toLowerCase()"><i class="chip-dot"></i>{{ h.oldStatus }}</span></td>
+              <td><span class="chip" [ngClass]="'chip--' + h.newStatus.toLowerCase()"><i class="chip-dot"></i>{{ h.newStatus }}</span></td>
               <td>{{ h.changedBy }}</td>
-
             </tr>
-
           </tbody>
-
         </table>
-
       </div>
-
     </div>
+  </div>
 
 
-    <!-- ================= HISTORIAL GLOBAL ================= -->
-    <div *ngIf="isGlobalHistoryOpen" class="history-modal-overlay">
-
-      <div class="history-modal-box">
-
-        <button class="close-history-btn" (click)="closeGlobalHistory()">
-          ✖ Cerrar
-        </button>
-
-        <h2>Todos los cambios de estados</h2>
-
-        <table class="history-table">
-
+  <!-- ================= HISTORIAL GLOBAL ================= -->
+  <div *ngIf="isGlobalHistoryOpen" class="overlay" (click)="closeGlobalHistory()">
+    <div class="modal-box modal-wide" (click)="$event.stopPropagation()">
+      <div class="modal-bar">
+        <span class="modal-bar-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Historial global de aprobaciones
+        </span>
+        <button class="btn-close-modal" (click)="closeGlobalHistory()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="globalHistory.length === 0" class="empty-state">Sin aprobaciones registradas.</div>
+        <table *ngIf="globalHistory.length > 0" class="hist-table">
           <thead>
             <tr>
-              <th>Fecha de Aprobacion</th>
-              <th>Estado Anterior</th>
-              <th>Estado Nuevo</th>
-              <th>Usuario</th>
+              <th>Fecha aprobación</th><th>Estado anterior</th><th>Nuevo estado</th><th>Usuario</th>
             </tr>
           </thead>
-
           <tbody>
-
             <tr *ngFor="let h of globalHistory">
-
-            
-
-              <td>
-                {{ h.changedDate | date:'yyyy-MM-dd HH:mm' }}
-              </td>
-
-              <td>{{ h.oldStatus }}</td>
-
-              <td>{{ h.newStatus }}</td>
-
+              <td class="cell-date">{{ h.changedDate | date:'dd/MM/yy HH:mm' }}</td>
+              <td><span class="chip" [ngClass]="'chip--' + h.oldStatus.toLowerCase()"><i class="chip-dot"></i>{{ h.oldStatus }}</span></td>
+              <td><span class="chip" [ngClass]="'chip--' + h.newStatus.toLowerCase()"><i class="chip-dot"></i>{{ h.newStatus }}</span></td>
               <td>{{ h.changedBy }}</td>
-
             </tr>
-
           </tbody>
-
         </table>
-
       </div>
-
     </div>
-
   </div>
 
 </div>
