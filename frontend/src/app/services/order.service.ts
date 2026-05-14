@@ -30,7 +30,7 @@ export interface OrderStatusLog {
 })
 export class OrderService {
 
-  private apiUrl = 'localhost:8080/api/orders';
+  private apiUrl = '/api/orders';
 
   constructor(private http: HttpClient) {}
 

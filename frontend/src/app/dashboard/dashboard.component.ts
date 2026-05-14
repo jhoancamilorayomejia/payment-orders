@@ -26,7 +26,7 @@ interface OrderHistory {
 export class DashboardComponent implements OnInit {
 
   orders: Order[] = [];
-  backendUrl = 'http://localhost:8080';
+  backendUrl = '';
 
   // ── Visor de archivos ──────────────────────────────────
   pdfBlobUrl:   SafeResourceUrl | null = null;
