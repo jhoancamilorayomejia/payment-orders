@@ -293,7 +293,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     };
 
     this.http.post<{ success: boolean; message: string }>(
-      'api/auth/register', body
+      'localhost:8080/api/auth/register', body
     ).subscribe({
       next: (res) => {
         if (res.success) {
