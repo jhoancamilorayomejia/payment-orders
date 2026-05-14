@@ -239,7 +239,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     const body = { email: this.email, password: this.password };
 
     this.http.post<{ success: boolean; message: string; rol: string; token: string }>(
-      'http://localhost:8080/api/auth/login', body
+      '/api/auth/login', body
     ).subscribe({
       next: (res) => {
         if (res.success) {
@@ -293,7 +293,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     };
 
     this.http.post<{ success: boolean; message: string }>(
-      'http://localhost:8080/api/auth/register', body
+      'api/auth/register', body
     ).subscribe({
       next: (res) => {
         if (res.success) {
@@ -356,7 +356,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   openOrdersModal(): void {
     this.isOrdersModalOpen = true;
 
-    this.http.get<OrderData[]>('http://localhost:8080/custom-response')
+    this.http.get<OrderData[]>('/custom-response')
       .subscribe({
         next: (res) => {
           this.orders = res.filter(order => order.status === 'APROBADO');
